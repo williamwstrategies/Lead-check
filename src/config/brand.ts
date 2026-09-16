@@ -1,0 +1,20 @@
+export const brand = {
+  name: 'LeadCheck',
+  tagline: "Find out what's stopping your website from generating more customers.",
+  shortTagline: 'Website Growth Check',
+  supportEmail: 'hello@leadcheck.app',
+  colors: {
+    ink: '#111827',
+    muted: '#5f6b66',
+    canvas: '#f7faf8',
+    surface: '#ffffff',
+    border: '#dbe5df',
+    primary: '#0f766e',
+    primaryHover: '#0b5f58',
+    primarySubtle: '#e7f4f1',
+    neutral: '#64748b',
+    success: '#26734d',
+    warning: '#a16207',
+    danger: '#b42318',
+  },
+};

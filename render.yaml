@@ -1,0 +1,38 @@
+services:
+  - type: web
+    name: leadcheck
+    runtime: node
+    plan: free
+    buildCommand: npm ci && npx playwright install --with-deps chromium && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: APP_ORIGIN
+        fromService:
+          type: web
+          name: leadcheck
+          envVarKey: RENDER_EXTERNAL_URL
+      - key: ENABLE_SERVICE_HELP_CTA
+        value: "true"
+      - key: ENABLE_AI_VISIBILITY
+        value: "false"
+      - key: ENABLE_COMPETITOR_ANALYSIS
+        value: "false"
+      - key: ENABLE_MOCK_SCANNER
+        value: "false"
+      - key: PLAYWRIGHT_BROWSERS_PATH
+        value: "0"
+      - key: ANALYTICS_LOG_TO_CONSOLE
+        value: "false"
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: VITE_SUPABASE_URL
+        sync: false
+      - key: VITE_SUPABASE_ANON_KEY
+        sync: false

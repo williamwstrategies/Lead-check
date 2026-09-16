@@ -1,0 +1,177 @@
+import crypto from 'node:crypto';
+import type { ApiErrorBody, AttributionFields, LeadCaptureRequest, LeadRecord } from '../../shared/leadcheck.js';
+import { normalizeWebsiteUrl } from '../lib/url.js';
+import { getSupabaseAdmin } from './persistence.js';
+
+interface StoredLead {
+  record: LeadRecord;
+  idempotencyKey: string;
+  anonymousId: string;
+}
+
+const inMemoryLeads = new Map<string, StoredLead>();
+
+const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'] as const;
+
+export class LeadCaptureError extends Error {
+  statusCode: number;
+  body: ApiErrorBody;
+
+  constructor(statusCode: number, body: ApiErrorBody) {
+    super(body.error);
+    this.name = 'LeadCaptureError';
+    this.statusCode = statusCode;
+    this.body = body;
+  }
+}
+
+function hash(value: string): string {
+  return crypto.createHash('sha1').update(value).digest('hex').slice(0, 20);
+}
+
+function cleanText(value: unknown, maxLength: number): string {
+  return String(value || '').trim().replace(/\s+/g, ' ').slice(0, maxLength);
+}
+
+function normalizeEmail(value: unknown): string {
+  const email = cleanText(value, 254).toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    throw new LeadCaptureError(422, {
+      error: 'Enter a valid email address.',
+      code: 'invalid_email',
+    });
+  }
+  return email;
+}
+
+function normalizePhone(value: unknown): string {
+  const raw = cleanText(value, 80);
+  const withoutExtension = raw.replace(/\s*(?:ext\.?|x)\s*\d+\s*$/i, '');
+  const hasLeadingPlus = withoutExtension.trim().startsWith('+');
+  const digits = withoutExtension.replace(/\D/g, '');
+
+  if (digits.length < 10 || digits.length > 15) {
+    throw new LeadCaptureError(422, {
+      error: 'Enter a valid phone number.',
+      code: 'invalid_phone',
+    });
+  }
+
+  if (digits.length === 10) return `+1${digits}`;
+  if (digits.length === 11 && digits.startsWith('1')) return `+${digits}`;
+  return `${hasLeadingPlus ? '+' : ''}${digits}`;
+}
+
+function normalizeAttribution(input?: AttributionFields): AttributionFields {
+  const attribution: AttributionFields = {};
+  for (const key of UTM_KEYS) {
+    const value = cleanText(input?.[key], 180);
+    if (value) attribution[key] = value;
+  }
+  return attribution;
+}
+
+function leadId(input: LeadCaptureRequest, normalizedDomain: string, email: string): string {
+  const requestedKey = cleanText(input.idempotencyKey, 120);
+  return `lead_${hash(requestedKey || `${input.scanId}:${normalizedDomain}:${email}`)}`;
+}
+
+function dedupeKeyFor(input: LeadCaptureRequest, normalizedDomain: string, email: string): string {
+  const requestedKey = cleanText(input.idempotencyKey, 120);
+  return requestedKey || `${input.scanId}:${normalizedDomain}:${email}`;
+}
+
+export async function captureLead(input: LeadCaptureRequest, anonymousId = ''): Promise<{ lead: LeadRecord; deduplicated: boolean }> {
+  const firstName = cleanText(input.firstName, 80);
+  const businessName = cleanText(input.businessName, 160);
+  const scanId = cleanText(input.scanId, 96);
+
+  if (!firstName) {
+    throw new LeadCaptureError(422, {
+      error: 'Enter your first name.',
+      code: 'missing_first_name',
+    });
+  }
+  if (!businessName) {
+    throw new LeadCaptureError(422, {
+      error: 'Enter your business name.',
+      code: 'missing_business_name',
+    });
+  }
+  if (!/^scan_[a-zA-Z0-9_-]{12,80}$/.test(scanId)) {
+    throw new LeadCaptureError(422, {
+      error: 'The scan could not be associated with this lead. Please restart the scan.',
+      code: 'invalid_scan_id',
+    });
+  }
+
+  const email = normalizeEmail(input.email);
+  const phone = normalizePhone(input.phone);
+  const website = normalizeWebsiteUrl(String(input.websiteUrl || ''));
+  const attribution = normalizeAttribution(input.attribution);
+  const idempotencyKey = dedupeKeyFor(input, website.normalizedDomain, email);
+  const existing = inMemoryLeads.get(idempotencyKey);
+
+  if (existing) {
+    return { lead: existing.record, deduplicated: true };
+  }
+
+  const createdAt = new Date().toISOString();
+  const lead: LeadRecord = {
+    id: leadId(input, website.normalizedDomain, email),
+    first_name: firstName,
+    phone,
+    email,
+    business_name: businessName,
+    website_url: website.url,
+    normalized_domain: website.normalizedDomain,
+    scan_id: scanId,
+    created_at: createdAt,
+    ...attribution,
+  };
+
+  inMemoryLeads.set(idempotencyKey, { record: lead, idempotencyKey, anonymousId });
+
+  const supabase = getSupabaseAdmin();
+  if (!supabase) {
+    console.info('[LeadCheck] Lead persistence using in-memory store: service role config is not set');
+    return { lead, deduplicated: false };
+  }
+
+  const { error } = await supabase.from('leads').upsert(
+    {
+      id: lead.id,
+      first_name: lead.first_name,
+      phone: lead.phone,
+      email: lead.email,
+      business_name: lead.business_name,
+      website_url: lead.website_url,
+      normalized_domain: lead.normalized_domain,
+      scan_id: lead.scan_id,
+      anonymous_id: anonymousId || null,
+      idempotency_key: idempotencyKey,
+      utm_source: lead.utm_source || null,
+      utm_medium: lead.utm_medium || null,
+      utm_campaign: lead.utm_campaign || null,
+      utm_content: lead.utm_content || null,
+      utm_term: lead.utm_term || null,
+      created_at: lead.created_at,
+    },
+    { onConflict: 'idempotency_key' }
+  );
+
+  if (error) {
+    inMemoryLeads.delete(idempotencyKey);
+    console.warn('[LeadCheck] Lead persistence failed:', error.message);
+    throw new LeadCaptureError(502, {
+      error: 'We could not save your information. Please try again.',
+      code: 'lead_persistence_failed',
+    });
+  }
+
+  return { lead, deduplicated: false };
+}
+
+export function clearInMemoryLeadsForTests(): void {
+  inMemoryLeads.clear();
+}
