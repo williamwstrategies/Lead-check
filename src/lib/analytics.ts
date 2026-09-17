@@ -2,6 +2,7 @@ import { loadAttribution } from './attribution';
 
 const STORAGE_KEY = 'leadcheck.anonymousId';
 const DEDUPE_WINDOW_MS = 900;
+const META_PIXEL_ID = '1607766497693862';
 const recentEvents = new Map<string, number>();
 
 declare global {
@@ -79,5 +80,5 @@ export async function trackEvent(
 
 export function trackMetaPixelEvent(event: string): void {
   if (typeof window.fbq !== 'function') return;
-  window.fbq('track', event);
+  window.fbq('trackSingle', META_PIXEL_ID, event);
 }
