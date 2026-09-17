@@ -17,9 +17,7 @@ export function BrandMark() {
   return (
     <span className="brand-lockup">
       <span className="brand-symbol" aria-hidden="true">
-        <span className="brand-symbol-window">
-          <span />
-        </span>
+        <img src="/leadcheck-mark.png" alt="" />
       </span>
       <span>
         <strong>{brand.name}</strong>

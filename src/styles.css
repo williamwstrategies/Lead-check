@@ -101,45 +101,21 @@ summary:focus-visible {
 }
 
 .brand-symbol {
-  display: grid;
+  display: block;
+  overflow: hidden;
   width: 42px;
   height: 42px;
-  place-items: center;
   border-radius: var(--radius);
-  color: var(--white);
   background: var(--primary);
   box-shadow: inset 0 -10px 22px rgba(17, 24, 39, 0.12);
 }
 
-.brand-symbol-window {
-  position: relative;
+.brand-symbol img {
   display: block;
-  width: 24px;
-  height: 20px;
-  border: 2px solid var(--white);
-  border-radius: 5px;
-}
-
-.brand-symbol-window::before {
-  position: absolute;
-  top: 4px;
-  left: 4px;
-  width: 12px;
-  height: 2px;
-  border-radius: 999px;
-  background: var(--primary-track);
-  content: "";
-}
-
-.brand-symbol-window span {
-  position: absolute;
-  right: 3px;
-  bottom: 4px;
-  width: 13px;
-  height: 8px;
-  border-right: 3px solid var(--white);
-  border-bottom: 3px solid var(--white);
-  transform: rotate(42deg);
+  width: 50px;
+  height: 50px;
+  max-width: none;
+  transform: translate(-4px, 0);
 }
 
 .brand-lockup strong,
@@ -1542,22 +1518,10 @@ p {
     flex: 0 0 34px;
   }
 
-  .topbar-public .brand-symbol-window {
-    width: 20px;
-    height: 17px;
-  }
-
-  .topbar-public .brand-symbol-window::before {
-    top: 3px;
-    left: 3px;
-    width: 10px;
-  }
-
-  .topbar-public .brand-symbol-window span {
-    right: 3px;
-    bottom: 3px;
-    width: 11px;
-    height: 7px;
+  .topbar-public .brand-symbol img {
+    width: 41px;
+    height: 41px;
+    transform: translate(-3px, 0);
   }
 
   .topbar-public .brand-lockup strong {
