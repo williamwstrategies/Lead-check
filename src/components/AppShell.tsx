@@ -38,7 +38,7 @@ export function AppShell({ children, currentPath, onNavigate }: AppShellProps) {
 
   return (
     <div className="app-frame">
-      <header className="topbar">
+      <header className={isPublic ? 'topbar topbar-public' : 'topbar'}>
         <button className="brand-button" type="button" onClick={() => onNavigate('/')} aria-label="LeadCheck home">
           <BrandMark />
         </button>

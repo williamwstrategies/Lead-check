@@ -81,6 +81,10 @@ summary:focus-visible {
   backdrop-filter: blur(18px);
 }
 
+.topbar-public {
+  justify-content: space-between;
+}
+
 .brand-button,
 .nav-item,
 .text-button {
@@ -1510,12 +1514,78 @@ p {
     padding-inline: 14px;
   }
 
+  .topbar-public {
+    flex-wrap: nowrap;
+    gap: 10px;
+    min-height: 64px;
+    padding: 10px 14px;
+  }
+
+  .topbar-public .brand-button {
+    min-width: 0;
+    flex: 1 1 auto;
+    padding: 0;
+  }
+
+  .topbar-public .brand-lockup {
+    min-width: 0;
+    gap: 8px;
+  }
+
+  .topbar-public .brand-lockup > span:last-child {
+    min-width: 0;
+  }
+
+  .topbar-public .brand-symbol {
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+  }
+
+  .topbar-public .brand-symbol-window {
+    width: 20px;
+    height: 17px;
+  }
+
+  .topbar-public .brand-symbol-window::before {
+    top: 3px;
+    left: 3px;
+    width: 10px;
+  }
+
+  .topbar-public .brand-symbol-window span {
+    right: 3px;
+    bottom: 3px;
+    width: 11px;
+    height: 7px;
+  }
+
+  .topbar-public .brand-lockup strong {
+    font-size: 1rem;
+    line-height: 1;
+  }
+
+  .topbar-public .brand-lockup small {
+    display: none;
+  }
+
   .public-nav {
     display: none;
   }
 
   .header-action {
+    flex: 0 0 auto;
     margin-left: auto;
+    min-height: 38px;
+    padding: 0 12px;
+    gap: 6px;
+    font-size: 0.86rem;
+    box-shadow: none;
+  }
+
+  .header-action svg {
+    width: 15px;
+    height: 15px;
   }
 
   .nav-item {
