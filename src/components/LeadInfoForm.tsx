@@ -79,7 +79,7 @@ export function LeadInfoForm({ scanId, websiteUrl, attribution, onSubmitted }: L
     <form className="lead-info-form" onSubmit={submit}>
       <div className="section-heading">
         <p className="eyebrow">Your LeadCheck Is Being Created</p>
-        <h2>Tell us where to send your results.</h2>
+        <h2>Tell us where to save your results.</h2>
       </div>
 
       <label className="field">

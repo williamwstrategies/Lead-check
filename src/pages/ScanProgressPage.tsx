@@ -194,10 +194,10 @@ export function ScanProgressPage({ input, onComplete, onNavigate }: ScanProgress
             <p>
               {leadSubmitted
                 ? 'Thanks. We are finishing your scan and preparing your report.'
-                : 'LeadCheck is crawling the site and turning the findings into a plain-language growth report.'}
+                : "We're checking multiple pages across your website and turning the findings into a plain-language report."}
             </p>
             {elapsedSeconds >= 12 && !scanReady ? (
-              <p className="muted">Still working. Larger websites can take a minute or two.</p>
+              <p className="muted">This usually takes about a minute. Larger websites can take a little longer.</p>
             ) : null}
             <div
               className={`progress-track${progressCompleted ? ' complete' : ''}`}
@@ -229,7 +229,7 @@ export function ScanProgressPage({ input, onComplete, onNavigate }: ScanProgress
                   ? 'Finalizing your report.'
                   : 'Your scan is still running.'}
             </h2>
-            <p>Keep this page open. Your report will appear here as soon as the scan is complete.</p>
+            <p>Keep this page open. Your LeadCheck report will appear here as soon as the scan is complete.</p>
           </div>
         ) : input && scanId ? (
           <LeadInfoForm

@@ -3,12 +3,14 @@ services:
     name: leadcheck
     runtime: node
     plan: free
-    buildCommand: npm ci && npx playwright install --with-deps chromium && npm run build
+    buildCommand: npm ci --include=dev && npx playwright install chromium && npm run build
     startCommand: npm start
     healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
         value: production
+      - key: NODE_VERSION
+        value: 22.22.0
       - key: HOST
         value: 0.0.0.0
       - key: APP_ORIGIN

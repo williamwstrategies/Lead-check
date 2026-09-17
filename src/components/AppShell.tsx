@@ -31,13 +31,36 @@ export function BrandMark() {
 
 export function AppShell({ children, currentPath, onNavigate }: AppShellProps) {
   const isPublic = currentPath === '/';
+
+  function scrollToLandingSection(id: string) {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
   return (
     <div className="app-frame">
       <header className="topbar">
         <button className="brand-button" type="button" onClick={() => onNavigate('/')} aria-label="LeadCheck home">
           <BrandMark />
         </button>
-        {!isPublic ? (
+        {isPublic ? (
+          <>
+            <nav className="topnav public-nav" aria-label="Landing page navigation">
+              <button className="nav-item" type="button" onClick={() => scrollToLandingSection('how-it-works')}>
+                How It Works
+              </button>
+              <button className="nav-item" type="button" onClick={() => scrollToLandingSection('what-it-checks')}>
+                What It Checks
+              </button>
+              <button className="nav-item" type="button" onClick={() => scrollToLandingSection('faq')}>
+                FAQ
+              </button>
+            </nav>
+            <button className="primary-action header-action" type="button" onClick={() => scrollToLandingSection('leadcheck-start')}>
+              <BarChart3 size={17} aria-hidden="true" />
+              Scan My Website
+            </button>
+          </>
+        ) : (
           <>
             <nav className="topnav" aria-label="Primary navigation">
               {navItems.map(item => {
@@ -61,15 +84,20 @@ export function AppShell({ children, currentPath, onNavigate }: AppShellProps) {
               Scan Free
             </button>
           </>
-        ) : null}
+        )}
       </header>
       <main className={isPublic ? 'main main-public' : 'main'}>{children}</main>
       <footer className="site-footer">
-        <span>© {new Date().getFullYear()} {brand.name}</span>
-        <span className="footer-note">Free website analysis for small businesses.</span>
-        <button type="button" onClick={() => onNavigate('/privacy')}>Privacy</button>
-        <button type="button" onClick={() => onNavigate('/terms')}>Terms</button>
-        <button type="button" onClick={() => onNavigate('/support')}>Support</button>
+        <div className="footer-brand">
+          <BrandMark />
+          <p>Free website analysis for small businesses that want clearer, more useful websites.</p>
+        </div>
+        <div className="footer-links" aria-label="Footer links">
+          <button type="button" onClick={() => onNavigate('/privacy')}>Privacy Policy</button>
+          <button type="button" onClick={() => onNavigate('/terms')}>Terms</button>
+          <button type="button" onClick={() => onNavigate('/support')}>Support</button>
+        </div>
+        <span className="footer-note">© {new Date().getFullYear()} {brand.name}</span>
       </footer>
     </div>
   );
