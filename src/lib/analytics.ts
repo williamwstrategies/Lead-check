@@ -4,6 +4,12 @@ const STORAGE_KEY = 'leadcheck.anonymousId';
 const DEDUPE_WINDOW_MS = 900;
 const recentEvents = new Map<string, number>();
 
+declare global {
+  interface Window {
+    fbq?: (...args: unknown[]) => void;
+  }
+}
+
 export type AnalyticsEventName =
   | 'landing_view'
   | 'website_submitted'
@@ -69,4 +75,9 @@ export async function trackEvent(
   } catch {
     // Analytics should never interrupt the scan or report experience.
   }
+}
+
+export function trackMetaPixelEvent(event: string): void {
+  if (typeof window.fbq !== 'function') return;
+  window.fbq('track', event);
 }

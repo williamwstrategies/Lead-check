@@ -2,7 +2,7 @@ import { FormEvent, useEffect, useRef, useState } from 'react';
 import { Mail, Phone, UserRound, Building2 } from 'lucide-react';
 import type { AttributionFields, LeadCaptureResponse } from '../../shared/leadcheck';
 import { submitLeadInfo } from '../lib/api';
-import { trackEvent } from '../lib/analytics';
+import { trackEvent, trackMetaPixelEvent } from '../lib/analytics';
 
 interface LeadInfoFormProps {
   scanId: string;
@@ -67,6 +67,7 @@ export function LeadInfoForm({ scanId, websiteUrl, attribution, onSubmitted }: L
         idempotencyKey: idempotencyKey(scanId),
       });
       submitted.current = true;
+      trackMetaPixelEvent('CompleteRegistration');
       onSubmitted(response);
     } catch (caught) {
       const message = caught instanceof Error ? caught.message : 'We could not save your information. Please try again.';
