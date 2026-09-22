@@ -142,27 +142,29 @@ export async function captureLead(input: LeadCaptureRequest, anonymousId = ''): 
     return { lead, deduplicated: false };
   }
 
-  const { error } = await supabase.from('leads').upsert(
-    {
-      id: lead.id,
-      first_name: lead.first_name,
-      phone: lead.phone,
-      email: lead.email,
-      business_name: lead.business_name,
-      website_url: lead.website_url,
-      normalized_domain: lead.normalized_domain,
-      scan_id: lead.scan_id,
-      anonymous_id: anonymousId || null,
-      idempotency_key: idempotencyKey,
-      utm_source: lead.utm_source || null,
-      utm_medium: lead.utm_medium || null,
-      utm_campaign: lead.utm_campaign || null,
-      utm_content: lead.utm_content || null,
-      utm_term: lead.utm_term || null,
-      created_at: lead.created_at,
-    },
-    { onConflict: 'idempotency_key' }
-  );
+  const leadPayload: Record<string, string> = {
+    id: lead.id,
+    first_name: lead.first_name,
+    phone: lead.phone,
+    email: lead.email,
+    business_name: lead.business_name,
+    website_url: lead.website_url,
+    normalized_domain: lead.normalized_domain,
+    scan_id: lead.scan_id,
+    idempotency_key: idempotencyKey,
+    created_at: lead.created_at,
+  };
+
+  for (const key of UTM_KEYS) {
+    const value = lead[key];
+    if (value) leadPayload[key] = value;
+  }
+
+  const { error } = await supabase.from('leads').insert(leadPayload);
+
+  if (error?.code === '23505') {
+    return { lead, deduplicated: true };
+  }
 
   if (error) {
     inMemoryLeads.delete(idempotencyKey);
