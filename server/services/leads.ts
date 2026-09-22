@@ -166,7 +166,12 @@ export async function captureLead(input: LeadCaptureRequest, anonymousId = ''): 
 
   if (error) {
     inMemoryLeads.delete(idempotencyKey);
-    console.warn('[LeadCheck] Lead persistence failed:', error.message);
+    console.warn('[LeadCheck] Lead persistence failed:', {
+      message: error.message,
+      code: error.code,
+      details: error.details,
+      hint: error.hint,
+    });
     throw new LeadCaptureError(502, {
       error: 'We could not save your information. Please try again.',
       code: 'lead_persistence_failed',
