@@ -125,7 +125,7 @@ export function createApp() {
     res.sendFile(path.join(publicDir, 'index.html'));
   });
 
-  app.use((error: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  app.use((error: Error, req: express.Request, res: express.Response, _next: express.NextFunction) => {
     if (error instanceof UrlValidationError) {
       return res.status(422).json({
         error: error.message,
@@ -136,7 +136,11 @@ export function createApp() {
       return res.status(error.statusCode).json(error.body);
     }
     if (error instanceof LeadCaptureError) {
-      return res.status(error.statusCode).json(error.body);
+      const body = { ...error.body };
+      if (req.get('x-leadcheck-debug') !== '1') {
+        delete body.details;
+      }
+      return res.status(error.statusCode).json(body);
     }
     console.error('[LeadCheck] API error:', error);
     res.status(500).json({

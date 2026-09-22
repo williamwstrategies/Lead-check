@@ -177,6 +177,12 @@ export async function captureLead(input: LeadCaptureRequest, anonymousId = ''): 
     throw new LeadCaptureError(502, {
       error: 'We could not save your information. Please try again.',
       code: 'lead_persistence_failed',
+      details: {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint,
+      },
     });
   }
 
