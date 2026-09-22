@@ -36,6 +36,7 @@ describe('lead capture', () => {
       utm_campaign: 'beta',
     });
     expect(result.lead.created_at).toBeTruthy();
+    expect(result.lead.id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-5[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
   });
 
   it('deduplicates repeated lead submissions with the same idempotency key', async () => {
