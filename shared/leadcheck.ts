@@ -47,6 +47,9 @@ export interface AttributionFields {
   utm_campaign?: string;
   utm_content?: string;
   utm_term?: string;
+  fbclid?: string;
+  gclid?: string;
+  referrer?: string;
 }
 
 export interface NormalizedWebsite {

@@ -16,7 +16,7 @@ const content = {
       'If you request your results, we collect the first name, phone number, email address, and business name you provide. We associate that information with the submitted website URL, normalized domain, scan ID, and report information.',
       'LeadCheck may store scan status, pages analyzed, findings, scores, recommendations, timestamps, and technical error details needed to operate and improve the product.',
       'We use basic analytics events to understand whether visitors can complete the funnel, including landing views, website submissions, scan starts and completions, lead submissions, report views, opened opportunities, and help requests.',
-      'If you arrive with UTM parameters such as utm_source, utm_medium, utm_campaign, utm_content, or utm_term, LeadCheck stores those attribution values so we can understand which campaigns led to scans and lead submissions.',
+      'If you arrive with campaign attribution such as UTM parameters, click IDs like fbclid or gclid, or an external referrer, LeadCheck stores those values so we can understand which traffic sources led to scans and lead submissions.',
       'LeadCheck uses browser storage for anonymous analytics IDs, saved reports on this device, and short-lived attribution values. We do not ask for passwords or payment information in this beta flow.',
       'Do not submit private, internal, or password-protected websites. LeadCheck is designed for public business websites.',
       `For privacy questions or data requests, contact ${brand.supportEmail}.`,

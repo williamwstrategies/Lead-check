@@ -86,6 +86,14 @@ export function createApp() {
         scanId: result.lead.scan_id,
         domain: result.lead.normalized_domain,
         deduplicated: result.deduplicated,
+        utm_source: result.lead.utm_source || '',
+        utm_medium: result.lead.utm_medium || '',
+        utm_campaign: result.lead.utm_campaign || '',
+        utm_content: result.lead.utm_content || '',
+        utm_term: result.lead.utm_term || '',
+        fbclid: result.lead.fbclid || '',
+        gclid: result.lead.gclid || '',
+        referrer: result.lead.referrer || '',
       },
     });
     res.status(result.deduplicated ? 200 : 201).json(result);

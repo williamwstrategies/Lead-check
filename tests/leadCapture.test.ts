@@ -19,6 +19,11 @@ describe('lead capture', () => {
         utm_source: 'meta',
         utm_medium: 'paid_social',
         utm_campaign: 'beta',
+        utm_content: 'score_ad',
+        utm_term: 'website audit',
+        fbclid: 'fb-click-123',
+        gclid: 'google-click-456',
+        referrer: 'https://l.facebook.com/l.php?u=https%3A%2F%2Fleadcheck.ca%2F',
       },
     });
 
@@ -34,6 +39,11 @@ describe('lead capture', () => {
       utm_source: 'meta',
       utm_medium: 'paid_social',
       utm_campaign: 'beta',
+      utm_content: 'score_ad',
+      utm_term: 'website audit',
+      fbclid: 'fb-click-123',
+      gclid: 'google-click-456',
+      referrer: 'https://l.facebook.com/l.php?u=https%3A%2F%2Fleadcheck.ca%2F',
     });
     expect(result.lead.created_at).toBeTruthy();
     expect(result.lead.id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-5[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);

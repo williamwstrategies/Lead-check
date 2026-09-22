@@ -12,6 +12,8 @@ interface StoredLead {
 const inMemoryLeads = new Map<string, StoredLead>();
 
 const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'] as const;
+const ATTRIBUTION_KEYS = [...UTM_KEYS, 'fbclid', 'gclid', 'referrer'] as const;
+const OPTIONAL_DB_ATTRIBUTION_KEYS = ['fbclid', 'gclid', 'referrer'] as const;
 
 export class LeadCaptureError extends Error {
   statusCode: number;
@@ -68,11 +70,20 @@ function normalizePhone(value: unknown): string {
 
 function normalizeAttribution(input?: AttributionFields): AttributionFields {
   const attribution: AttributionFields = {};
-  for (const key of UTM_KEYS) {
-    const value = cleanText(input?.[key], 180);
+  for (const key of ATTRIBUTION_KEYS) {
+    const value = cleanText(input?.[key], key === 'referrer' ? 600 : 180);
     if (value) attribution[key] = value;
   }
   return attribution;
+}
+
+function isMissingOptionalAttributionColumn(error: { code?: string; message?: string; details?: unknown }): boolean {
+  const details = typeof error.details === 'string' ? error.details : JSON.stringify(error.details || '');
+  const message = `${error.message || ''} ${details}`.toLowerCase();
+  return (
+    error.code === 'PGRST204' &&
+    OPTIONAL_DB_ATTRIBUTION_KEYS.some(key => message.includes(key.toLowerCase()))
+  );
 }
 
 function leadId(input: LeadCaptureRequest, normalizedDomain: string, email: string): string {
@@ -155,12 +166,24 @@ export async function captureLead(input: LeadCaptureRequest, anonymousId = ''): 
     created_at: lead.created_at,
   };
 
-  for (const key of UTM_KEYS) {
+  for (const key of ATTRIBUTION_KEYS) {
     const value = lead[key];
     if (value) leadPayload[key] = value;
   }
 
-  const { error } = await supabase.from('leads').insert(leadPayload);
+  let { error } = await supabase.from('leads').insert(leadPayload);
+
+  if (error && isMissingOptionalAttributionColumn(error)) {
+    const fallbackPayload = { ...leadPayload };
+    for (const key of OPTIONAL_DB_ATTRIBUTION_KEYS) {
+      delete fallbackPayload[key];
+    }
+    const retry = await supabase.from('leads').insert(fallbackPayload);
+    error = retry.error;
+    if (!error) {
+      console.warn('[LeadCheck] Lead saved without optional click/referrer attribution columns. Run the latest Supabase migration.');
+    }
+  }
 
   if (error?.code === '23505') {
     return { lead, deduplicated: true };
