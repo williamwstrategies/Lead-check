@@ -86,6 +86,7 @@ export function createApp() {
         scanId: result.lead.scan_id,
         domain: result.lead.normalized_domain,
         deduplicated: result.deduplicated,
+        marketingConsent: result.lead.marketing_consent === true,
         utm_source: result.lead.utm_source || '',
         utm_medium: result.lead.utm_medium || '',
         utm_campaign: result.lead.utm_campaign || '',

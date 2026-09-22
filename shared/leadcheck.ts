@@ -150,6 +150,7 @@ export interface LeadCaptureRequest {
   websiteUrl: string;
   scanId: string;
   attribution?: AttributionFields;
+  marketingConsent?: boolean;
   idempotencyKey?: string;
 }
 
@@ -162,6 +163,8 @@ export interface LeadRecord extends AttributionFields {
   website_url: string;
   normalized_domain: string;
   scan_id: string;
+  marketing_consent?: boolean;
+  marketing_consent_at?: string | null;
   created_at: string;
 }
 

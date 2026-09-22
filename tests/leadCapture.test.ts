@@ -15,6 +15,7 @@ describe('lead capture', () => {
       websiteUrl: 'maya-plumbing.example',
       scanId: 'scan_testlead12345',
       idempotencyKey: 'lead-test-1',
+      marketingConsent: true,
       attribution: {
         utm_source: 'meta',
         utm_medium: 'paid_social',
@@ -36,6 +37,7 @@ describe('lead capture', () => {
       website_url: 'https://maya-plumbing.example/',
       normalized_domain: 'maya-plumbing.example',
       scan_id: 'scan_testlead12345',
+      marketing_consent: true,
       utm_source: 'meta',
       utm_medium: 'paid_social',
       utm_campaign: 'beta',
@@ -45,6 +47,7 @@ describe('lead capture', () => {
       gclid: 'google-click-456',
       referrer: 'https://l.facebook.com/l.php?u=https%3A%2F%2Fleadcheck.ca%2F',
     });
+    expect(result.lead.marketing_consent_at).toBeTruthy();
     expect(result.lead.created_at).toBeTruthy();
     expect(result.lead.id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-5[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
   });
@@ -67,6 +70,8 @@ describe('lead capture', () => {
     expect(second.deduplicated).toBe(true);
     expect(second.lead.id).toBe(first.lead.id);
     expect(second.lead.created_at).toBe(first.lead.created_at);
+    expect(first.lead.marketing_consent).toBe(false);
+    expect(first.lead.marketing_consent_at).toBeNull();
   });
 
   it('rejects invalid email and phone values', async () => {

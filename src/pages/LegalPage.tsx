@@ -17,6 +17,7 @@ const content = {
       'LeadCheck may store scan status, pages analyzed, findings, scores, recommendations, timestamps, and technical error details needed to operate and improve the product.',
       'We use basic analytics events to understand whether visitors can complete the funnel, including landing views, website submissions, scan starts and completions, lead submissions, report views, opened opportunities, and help requests.',
       'If you arrive with campaign attribution such as UTM parameters, click IDs like fbclid or gclid, or an external referrer, LeadCheck stores those values so we can understand which traffic sources led to scans and lead submissions.',
+      'If you choose to receive website tips and LeadCheck updates, we store your marketing consent and unsubscribe or suppression status so we can respect that preference.',
       'LeadCheck uses browser storage for anonymous analytics IDs, saved reports on this device, and short-lived attribution values. We do not ask for passwords or payment information in this beta flow.',
       'Do not submit private, internal, or password-protected websites. LeadCheck is designed for public business websites.',
       `For privacy questions or data requests, contact ${brand.supportEmail}.`,

@@ -14,6 +14,7 @@ const inMemoryLeads = new Map<string, StoredLead>();
 const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'] as const;
 const ATTRIBUTION_KEYS = [...UTM_KEYS, 'fbclid', 'gclid', 'referrer'] as const;
 const OPTIONAL_DB_ATTRIBUTION_KEYS = ['fbclid', 'gclid', 'referrer'] as const;
+const OPTIONAL_DB_CONSENT_KEYS = ['marketing_consent', 'marketing_consent_at'] as const;
 
 export class LeadCaptureError extends Error {
   statusCode: number;
@@ -82,7 +83,7 @@ function isMissingOptionalAttributionColumn(error: { code?: string; message?: st
   const message = `${error.message || ''} ${details}`.toLowerCase();
   return (
     error.code === 'PGRST204' &&
-    OPTIONAL_DB_ATTRIBUTION_KEYS.some(key => message.includes(key.toLowerCase()))
+    [...OPTIONAL_DB_ATTRIBUTION_KEYS, ...OPTIONAL_DB_CONSENT_KEYS].some(key => message.includes(key.toLowerCase()))
   );
 }
 
@@ -124,6 +125,7 @@ export async function captureLead(input: LeadCaptureRequest, anonymousId = ''): 
   const phone = normalizePhone(input.phone);
   const website = normalizeWebsiteUrl(String(input.websiteUrl || ''));
   const attribution = normalizeAttribution(input.attribution);
+  const marketingConsent = input.marketingConsent === true;
   const idempotencyKey = dedupeKeyFor(input, website.normalizedDomain, email);
   const existing = inMemoryLeads.get(idempotencyKey);
 
@@ -141,6 +143,8 @@ export async function captureLead(input: LeadCaptureRequest, anonymousId = ''): 
     website_url: website.url,
     normalized_domain: website.normalizedDomain,
     scan_id: scanId,
+    marketing_consent: marketingConsent,
+    marketing_consent_at: marketingConsent ? createdAt : null,
     created_at: createdAt,
     ...attribution,
   };
@@ -153,7 +157,7 @@ export async function captureLead(input: LeadCaptureRequest, anonymousId = ''): 
     return { lead, deduplicated: false };
   }
 
-  const leadPayload: Record<string, string> = {
+  const leadPayload: Record<string, string | boolean | null> = {
     id: lead.id,
     first_name: lead.first_name,
     phone: lead.phone,
@@ -163,6 +167,8 @@ export async function captureLead(input: LeadCaptureRequest, anonymousId = ''): 
     normalized_domain: lead.normalized_domain,
     scan_id: lead.scan_id,
     idempotency_key: idempotencyKey,
+    marketing_consent: marketingConsent,
+    marketing_consent_at: marketingConsent ? createdAt : null,
     created_at: lead.created_at,
   };
 
@@ -175,13 +181,13 @@ export async function captureLead(input: LeadCaptureRequest, anonymousId = ''): 
 
   if (error && isMissingOptionalAttributionColumn(error)) {
     const fallbackPayload = { ...leadPayload };
-    for (const key of OPTIONAL_DB_ATTRIBUTION_KEYS) {
+    for (const key of [...OPTIONAL_DB_ATTRIBUTION_KEYS, ...OPTIONAL_DB_CONSENT_KEYS]) {
       delete fallbackPayload[key];
     }
     const retry = await supabase.from('leads').insert(fallbackPayload);
     error = retry.error;
     if (!error) {
-      console.warn('[LeadCheck] Lead saved without optional click/referrer attribution columns. Run the latest Supabase migration.');
+      console.warn('[LeadCheck] Lead saved without optional attribution or marketing consent columns. Run the latest Supabase migration.');
     }
   }
 

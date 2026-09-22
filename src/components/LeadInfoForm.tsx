@@ -20,6 +20,7 @@ export function LeadInfoForm({ scanId, websiteUrl, attribution, onSubmitted }: L
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [businessName, setBusinessName] = useState('');
+  const [marketingConsent, setMarketingConsent] = useState(false);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const submitted = useRef(false);
@@ -64,6 +65,7 @@ export function LeadInfoForm({ scanId, websiteUrl, attribution, onSubmitted }: L
         websiteUrl,
         scanId,
         attribution,
+        marketingConsent,
         idempotencyKey: idempotencyKey(scanId),
       });
       submitted.current = true;
@@ -136,6 +138,16 @@ export function LeadInfoForm({ scanId, websiteUrl, attribution, onSubmitted }: L
           autoComplete="organization"
           name="businessName"
         />
+      </label>
+
+      <label className="consent-option">
+        <input
+          checked={marketingConsent}
+          onChange={event => setMarketingConsent(event.target.checked)}
+          type="checkbox"
+          name="marketingConsent"
+        />
+        <span>Send me occasional website tips and LeadCheck updates.</span>
       </label>
 
       <p className="privacy-note">
