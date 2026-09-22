@@ -1,11 +1,12 @@
 import { type CSSProperties, useEffect, useState } from 'react';
-import { Save, RotateCcw } from 'lucide-react';
+import { CheckCircle2, CircleAlert, RotateCcw, Save, TriangleAlert } from 'lucide-react';
 import type { FeatureFlags, LeadCheckReport, ScanRequest } from '../../shared/leadcheck';
 import { ReportSections } from '../components/ReportSections';
 import { brand } from '../config/brand';
 import { requestServiceHelp } from '../lib/api';
 import { saveReportLocally } from '../lib/reportStorage';
 import { trackEvent } from '../lib/analytics';
+import { getScoreStatusView } from '../lib/reportStatus';
 
 interface ReportPageProps {
   report: LeadCheckReport | null;
@@ -56,31 +57,50 @@ export function ReportPage({ report, features, onStartScan, onNavigate }: Report
   const opportunityCount = report.opportunities.length;
   const businessLabel = report.businessContext.businessName || report.requestedWebsite.normalizedDomain;
   const scoreValue = Math.round(report.score.score);
+  const scoreStatus = getScoreStatusView(scoreValue);
+  const ScoreStatusIcon =
+    scoreStatus.tone === 'strong' ? CheckCircle2 : scoreStatus.tone === 'needs-improvement' ? CircleAlert : TriangleAlert;
+  const severityCounts = report.opportunities.reduce(
+    (counts, finding) => ({
+      ...counts,
+      [finding.severity]: counts[finding.severity] + 1,
+    }),
+    { high: 0, medium: 0, low: 0 }
+  );
 
   return (
-    <article className="report-page">
-      <header className="report-header">
+    <article className={`report-page report-${scoreStatus.tone}`}>
+      <header className="report-header" data-status={scoreStatus.tone}>
         <div className="report-header-main">
           <div className="report-kicker">
             <span>{brand.name}</span>
             <span>Website Growth Report</span>
           </div>
           <p className="eyebrow">Analyzed Website</p>
-          <h1>{businessLabel}</h1>
-          <p className="report-domain">{report.requestedWebsite.normalizedDomain}</p>
+          <h1>{scoreStatus.headline}</h1>
+          <p className="report-lede">{scoreStatus.supportingCopy}</p>
+          <p className="report-domain">
+            Report for {businessLabel} · {report.requestedWebsite.normalizedDomain}
+          </p>
           <div className="report-hero-score">
-            <div className="score-ring report-score-ring" style={{ '--score': scoreValue } as CSSProperties}>
+            <div
+              className="score-ring report-score-ring"
+              style={{ '--score': scoreValue } as CSSProperties}
+              aria-label={`LeadCheck score ${scoreValue} out of 100`}
+            >
               <span>{scoreValue}</span>
               <small>/100</small>
             </div>
             <div>
               <p className="eyebrow">LeadCheck Score</p>
-              <h2>{report.score.status}</h2>
+              <h2>
+                <ScoreStatusIcon size={24} aria-hidden="true" />
+                {scoreStatus.label}
+              </h2>
+              <p>{scoreStatus.scoreCopy}</p>
               <p>
-                We found {opportunityCount} important {opportunityCount === 1 ? 'opportunity' : 'opportunities'} to
-                improve how your website supports customer acquisition.
+                <strong>{opportunityCount}</strong> {opportunityCount === 1 ? 'opportunity' : 'opportunities'} found
               </p>
-              <p>{report.summary}</p>
             </div>
           </div>
           <div className="report-summary-strip">
@@ -90,11 +110,17 @@ export function ReportPage({ report, features, onStartScan, onNavigate }: Report
             </span>
             <span>
               <strong>{opportunityCount}</strong>
-              important {opportunityCount === 1 ? 'opportunity' : 'opportunities'}
+              {opportunityCount === 1 ? 'opportunity' : 'opportunities'} found
             </span>
             <span>
-              <strong>{topOpportunity ? `#1 ${topOpportunity.title}` : 'No critical issue'}</strong>
-              strongest priority
+              <strong>
+                {severityCounts.high} High / {severityCounts.medium} Medium / {severityCounts.low} Low
+              </strong>
+              priority breakdown
+            </span>
+            <span>
+              <strong>{topOpportunity ? `#1 ${topOpportunity.title}` : 'No urgent recommendation'}</strong>
+              first recommendation
             </span>
           </div>
         </div>

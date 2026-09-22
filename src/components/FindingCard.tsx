@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, CircleAlert, Info, TriangleAlert } from 'lucide-react';
 import type { ScanFinding } from '../../shared/leadcheck';
 import { trackEvent } from '../lib/analytics';
+import { getFindingPriorityLabel, getFindingTone } from '../lib/reportStatus';
 
 interface FindingCardProps {
   finding: ScanFinding;
@@ -18,6 +19,9 @@ const categoryLabels = {
 
 export function FindingCard({ finding, priority = false }: FindingCardProps) {
   const [open, setOpen] = useState(false);
+  const findingTone = getFindingTone(finding.severity);
+  const priorityLabel = getFindingPriorityLabel(finding.severity);
+  const PriorityIcon = findingTone === 'high' ? TriangleAlert : findingTone === 'medium' ? CircleAlert : Info;
 
   function toggle() {
     const next = !open;
@@ -32,9 +36,13 @@ export function FindingCard({ finding, priority = false }: FindingCardProps) {
   }
 
   return (
-    <article className={priority ? 'finding-card priority' : 'finding-card'}>
+    <article className={priority ? `finding-card priority ${findingTone}` : `finding-card ${findingTone}`}>
       <div className="finding-topline">
         {priority ? <span className="priority-badge">#{finding.priority}</span> : null}
+        <span className={`severity-badge ${findingTone}`}>
+          <PriorityIcon size={14} aria-hidden="true" />
+          {priorityLabel}
+        </span>
         <span className={`status-pill ${finding.status}`}>{categoryLabels[finding.category]}</span>
       </div>
       <h3>{finding.title}</h3>

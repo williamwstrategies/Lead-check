@@ -104,7 +104,8 @@ const report: LeadCheckReport = {
 describe('report rendering', () => {
   it('renders score cards accessibly', () => {
     render(<ScoreCard score={report.score} />);
-    expect(screen.getByLabelText('LeadCheck Score score 64 out of 100')).toBeInTheDocument();
+    expect(screen.getByLabelText('LeadCheck Score score 64 out of 100, Needs Improvement')).toBeInTheDocument();
+    expect(screen.getByText('Needs Improvement')).toBeInTheDocument();
   });
 
   it('renders the required report hierarchy', () => {
@@ -121,8 +122,10 @@ describe('report rendering', () => {
     );
 
     expect(screen.getByText('Your LeadCheck Score')).toBeInTheDocument();
-    expect(screen.getByText('What You Should Fix First')).toBeInTheDocument();
+    expect(screen.getByText('Fix These First')).toBeInTheDocument();
+    expect(screen.getByText('High Priority')).toBeInTheDocument();
     expect(screen.getByText("What's Working")).toBeInTheDocument();
+    expect(screen.getByText('Working Well')).toBeInTheDocument();
     expect(screen.getAllByText('Google Visibility').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Lead Generation').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Trust').length).toBeGreaterThan(0);

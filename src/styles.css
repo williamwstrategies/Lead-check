@@ -21,6 +21,15 @@
   --warning-subtle: #fff7df;
   --danger: #b42318;
   --danger-subtle: #fff0ee;
+  --status-poor: #dc2626;
+  --status-poor-subtle: #fef2f2;
+  --status-poor-border: #fecaca;
+  --status-improve: #d97706;
+  --status-improve-subtle: #fffbeb;
+  --status-improve-border: #fde68a;
+  --status-strong: #16a34a;
+  --status-strong-subtle: #f0fdf4;
+  --status-strong-border: #bbf7d0;
   --white: #ffffff;
   --score-track: #e4ece8;
   --radius: 8px;
@@ -524,8 +533,7 @@ p {
   color: var(--ink);
 }
 
-.check-card svg,
-.positive-card svg {
+.check-card svg {
   color: var(--primary);
 }
 
@@ -819,12 +827,30 @@ p {
   gap: 22px;
 }
 
+.report-page.report-poor {
+  --score-color: var(--status-poor);
+  --score-subtle: var(--status-poor-subtle);
+  --score-border: var(--status-poor-border);
+}
+
+.report-page.report-needs-improvement {
+  --score-color: var(--status-improve);
+  --score-subtle: var(--status-improve-subtle);
+  --score-border: var(--status-improve-border);
+}
+
+.report-page.report-strong {
+  --score-color: var(--status-strong);
+  --score-subtle: var(--status-strong-subtle);
+  --score-border: var(--status-strong-border);
+}
+
 .report-header {
   padding: clamp(22px, 4vw, 34px);
-  border: 1px solid var(--line);
+  border: 1px solid var(--score-border, var(--line));
   border-radius: var(--radius);
   background:
-    linear-gradient(135deg, rgba(231, 244, 241, 0.75), rgba(255, 255, 255, 0.88) 38%),
+    linear-gradient(135deg, var(--score-subtle, rgba(231, 244, 241, 0.75)), rgba(255, 255, 255, 0.9) 42%),
     var(--surface);
   box-shadow: var(--shadow);
 }
@@ -835,6 +861,14 @@ p {
 
 .report-header h1 {
   font-size: clamp(2rem, 4vw, 3.6rem);
+}
+
+.report-lede {
+  max-width: 720px;
+  margin: -8px 0 18px;
+  color: var(--ink);
+  font-size: clamp(1rem, 2vw, 1.15rem);
+  line-height: 1.55;
 }
 
 .report-kicker {
@@ -870,12 +904,16 @@ p {
   align-items: center;
   margin: 20px 0 22px;
   padding: 18px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--score-border, var(--line));
   border-radius: var(--radius);
-  background: var(--surface-subtle);
+  background: var(--surface);
 }
 
 .report-hero-score h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--score-color, var(--ink));
   font-size: clamp(1.45rem, 2.5vw, 2.2rem);
 }
 
@@ -897,7 +935,7 @@ p {
 
 .report-summary-strip {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 10px;
   margin-top: 18px;
 }
@@ -945,11 +983,37 @@ p {
   padding: 18px;
 }
 
+.score-card.poor {
+  --score-color: var(--status-poor);
+  --score-subtle: var(--status-poor-subtle);
+  --score-border: var(--status-poor-border);
+}
+
+.score-card.needs-improvement {
+  --score-color: var(--status-improve);
+  --score-subtle: var(--status-improve-subtle);
+  --score-border: var(--status-improve-border);
+}
+
+.score-card.strong {
+  --score-color: var(--status-strong);
+  --score-subtle: var(--status-strong-subtle);
+  --score-border: var(--status-strong-border);
+}
+
+.score-card {
+  border-color: var(--score-border, var(--line));
+  background:
+    linear-gradient(90deg, var(--score-subtle, var(--surface-subtle)), var(--surface) 46%),
+    var(--surface);
+}
+
 .score-card.large {
   grid-template-columns: 140px 1fr;
 }
 
 .score-ring {
+  --score-fill: var(--score);
   display: grid;
   width: 92px;
   height: 92px;
@@ -957,7 +1021,8 @@ p {
   border-radius: 50%;
   background:
     radial-gradient(circle at center, var(--white) 58%, transparent 59%),
-    conic-gradient(var(--primary) calc(var(--score) * 1%), var(--score-track) 0);
+    conic-gradient(var(--score-color, var(--primary)) calc(var(--score-fill) * 1%), var(--score-track) 0);
+  animation: score-ring-fill 720ms ease-out both;
 }
 
 .score-card.large .score-ring {
@@ -981,6 +1046,28 @@ p {
   font-weight: 800;
 }
 
+.score-card h3 {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--score-color, var(--ink));
+}
+
+@property --score-fill {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
+
+@keyframes score-ring-fill {
+  from {
+    --score-fill: 0;
+  }
+  to {
+    --score-fill: var(--score);
+  }
+}
+
 .finding-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -988,11 +1075,26 @@ p {
 }
 
 .finding-card {
+  border-left: 5px solid var(--line-strong);
   padding: 18px;
 }
 
 .finding-card.priority {
   border-color: var(--line-strong);
+}
+
+.finding-card.high {
+  border-left-color: var(--status-poor);
+  background: linear-gradient(90deg, var(--status-poor-subtle), var(--surface) 34%);
+}
+
+.finding-card.medium {
+  border-left-color: var(--status-improve);
+  background: linear-gradient(90deg, var(--status-improve-subtle), var(--surface) 34%);
+}
+
+.finding-card.low {
+  border-left-color: var(--neutral);
 }
 
 .finding-topline {
@@ -1004,9 +1106,11 @@ p {
 }
 
 .priority-badge,
-.status-pill {
+.status-pill,
+.severity-badge {
   display: inline-flex;
   align-items: center;
+  gap: 5px;
   min-height: 28px;
   padding: 0 10px;
   border-radius: 999px;
@@ -1022,6 +1126,24 @@ p {
 .status-pill {
   color: var(--primary-dark);
   background: var(--primary-subtle);
+}
+
+.severity-badge.high {
+  color: var(--status-poor);
+  background: var(--status-poor-subtle);
+  border: 1px solid var(--status-poor-border);
+}
+
+.severity-badge.medium {
+  color: var(--status-improve);
+  background: var(--status-improve-subtle);
+  border: 1px solid var(--status-improve-border);
+}
+
+.severity-badge.low {
+  color: var(--neutral);
+  background: var(--surface-subtle);
+  border: 1px solid var(--line);
 }
 
 .finding-details {
@@ -1210,6 +1332,23 @@ p {
   gap: 12px;
   min-height: 130px;
   padding: 18px;
+  border-color: var(--status-strong-border);
+  background: var(--status-strong-subtle);
+}
+
+.positive-card svg {
+  flex: 0 0 auto;
+  color: var(--status-strong);
+}
+
+.positive-card span {
+  display: inline-flex;
+  margin-bottom: 4px;
+  color: var(--status-strong);
+  font-size: 0.74rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .report-row small {

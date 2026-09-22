@@ -2,6 +2,7 @@ import { CheckCircle2, ExternalLink, HelpCircle } from 'lucide-react';
 import type { FeatureFlags, LeadCheckReport, ReportCategoryKey } from '../../shared/leadcheck';
 import { FindingCard } from './FindingCard';
 import { ScoreCard } from './ScoreCard';
+import { getScoreStatusView } from '../lib/reportStatus';
 
 interface ReportSectionsProps {
   report: LeadCheckReport;
@@ -18,6 +19,16 @@ const categoryOrder: ReportCategoryKey[] = [
 ];
 
 export function ReportSections({ report, features, onServiceHelp }: ReportSectionsProps) {
+  const scoreStatus = getScoreStatusView(Math.round(report.score.score));
+  const priorityFindings = report.opportunities.slice(0, 3);
+  const recommendationHeading = scoreStatus.tone === 'strong' ? 'Remaining Opportunities' : 'Fix These First';
+  const recommendationCopy =
+    scoreStatus.tone === 'strong'
+      ? 'Your website is already doing a lot well. These are the clearest remaining improvements LeadCheck found.'
+      : 'Start with these recommendations before working through the full analysis.';
+  const helpHeading =
+    scoreStatus.tone === 'strong' ? 'Want help with the remaining opportunities?' : 'Want help improving your website?';
+
   return (
     <div className="report-stack">
       <section className="report-section">
@@ -31,10 +42,11 @@ export function ReportSections({ report, features, onServiceHelp }: ReportSectio
       <section className="report-section" id="recommendations">
         <div className="section-heading">
           <p className="eyebrow">Highest Impact</p>
-          <h2>What You Should Fix First</h2>
+          <h2>{recommendationHeading}</h2>
+          <p>{recommendationCopy}</p>
         </div>
         <div className="finding-grid">
-          {report.opportunities.map(finding => (
+          {priorityFindings.map(finding => (
             <FindingCard key={finding.id} finding={finding} priority />
           ))}
         </div>
@@ -50,6 +62,7 @@ export function ReportSections({ report, features, onServiceHelp }: ReportSectio
             <article className="positive-card" key={item.id}>
               <CheckCircle2 size={20} aria-hidden="true" />
               <div>
+                <span>Working Well</span>
                 <h3>{item.title}</h3>
                 <p>{item.summary}</p>
               </div>
@@ -122,13 +135,13 @@ export function ReportSections({ report, features, onServiceHelp }: ReportSectio
         <section className="report-section service-help">
           <div>
             <HelpCircle size={22} aria-hidden="true" />
-            <h2>Want help improving your website?</h2>
+            <h2>{helpHeading}</h2>
             <p>
-              If you'd rather not tackle these recommendations yourself, let us know you're interested in help.
+              If you'd rather have someone help work through these recommendations, tell us what you'd like help with.
             </p>
           </div>
           <button className="secondary-action" type="button" onClick={onServiceHelp}>
-            Get Help Improving My Website
+            Get Help With My Website
             <ExternalLink size={17} aria-hidden="true" />
           </button>
         </section>
