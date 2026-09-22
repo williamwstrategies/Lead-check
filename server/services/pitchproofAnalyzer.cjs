@@ -698,6 +698,8 @@ const PRIORITY_LINK_KEYWORDS = [
   'service', 'contact', 'about', 'gallery', 'project', 'portfolio',
 ];
 
+const REVIEW_URL_RE = /review|testimonial|feedback|customer-review|client-review/i;
+
 function classifyPage(url) {
   const p = new URL(url).pathname.toLowerCase();
   if (/\/service/.test(p) || SERVICE_TERMS.some(t => p.includes(t.split(' ')[0]))) return 'services';
@@ -706,6 +708,44 @@ function classifyPage(url) {
   if (/\/review|\/testimonial/.test(p))             return 'reviews';
   if (/\/gallerr?y|\/project|\/portfolio/.test(p))  return 'gallery';
   return 'other';
+}
+
+function crawlCandidateSourceRank(candidate) {
+  return candidate.source === 'homepage-link' ? 0 : 1;
+}
+
+function crawlCandidatePageRank(candidate) {
+  let path = '';
+  try { path = new URL(candidate.url).pathname.toLowerCase(); } catch { path = String(candidate.url || '').toLowerCase(); }
+  const pathWithoutTrailingSlash = path.replace(/\/+$/, '') || '/';
+
+  if (REVIEW_URL_RE.test(candidate.url)) return 0;
+  if (/^\/(?:service-areas?|areas-served|locations?|service-location)$/.test(pathWithoutTrailingSlash)) return 1;
+  if (/^\/(?:service-areas?|areas-served|locations?|service-location)\//.test(path)) return 3;
+  if (/^\/(?:services?|service)(?:\/|-|$)/.test(path)) return 2;
+  if (/^\/(?:blog|news|articles?|brand|category|tag)(?:\/|$)/.test(path)) return 5;
+  if (classifyPage(candidate.url) === 'services') return 3;
+  return 4;
+}
+
+function compareCrawlCandidates(a, b) {
+  const sourceDelta = crawlCandidateSourceRank(a) - crawlCandidateSourceRank(b);
+  if (sourceDelta !== 0) return sourceDelta;
+
+  const pageDelta = crawlCandidatePageRank(a) - crawlCandidatePageRank(b);
+  if (pageDelta !== 0) return pageDelta;
+
+  if (a.source === 'slug-guess' && b.source === 'slug-guess') {
+    const aPriority = Number.isFinite(a.priority) ? a.priority : Number.MAX_SAFE_INTEGER;
+    const bPriority = Number.isFinite(b.priority) ? b.priority : Number.MAX_SAFE_INTEGER;
+    if (aPriority !== bPriority) return aPriority - bPriority;
+  }
+
+  const aPriority = Number.isFinite(a.priority) ? a.priority : Number.MAX_SAFE_INTEGER;
+  const bPriority = Number.isFinite(b.priority) ? b.priority : Number.MAX_SAFE_INTEGER;
+  if (aPriority !== bPriority) return aPriority - bPriority;
+
+  return urlKey(a.url).localeCompare(urlKey(b.url));
 }
 
 function urlKey(url) {
@@ -1178,7 +1218,7 @@ async function crawlWithPlaywright(startUrl) {
     const visited = new Set([urlKey(finalHomeUrl)]);
 
     // ── Build candidate list ──────────────────────────────────────
-    const slugCandidates = PRIORITY_SLUGS.map(s => ({ url: origin + s, source: 'slug-guess' }));
+    const slugCandidates = PRIORITY_SLUGS.map((s, priority) => ({ url: origin + s, source: 'slug-guess', priority }));
     const homepageLinks  = extractInternalLinks(homepageResult.html, finalHomeUrl);
     const keywordLinks   = homepageLinks
       .filter(link => {
@@ -1186,7 +1226,7 @@ async function crawlWithPlaywright(startUrl) {
         return PRIORITY_LINK_KEYWORDS.some(kw => path.includes(kw))
           || SERVICE_TERMS.some(t => path.includes(t.split(' ')[0]));
       })
-      .map(url => ({ url, source: 'homepage-link' }));
+      .map((url, priority) => ({ url, source: 'homepage-link', priority }));
 
     const seen       = new Set(visited);
     const candidates = [];
@@ -1197,20 +1237,8 @@ async function crawlWithPlaywright(startUrl) {
       candidates.push(item);
     }
 
-    // Sort: review/testimonial pages first — they are most likely to have review evidence.
-    // If the crawl budget runs out, we want to have seen the review page before service/contact.
-    const REVIEW_URL_RE = /review|testimonial|feedback|customer-review|client-review/i;
-    candidates.sort((a, b) => {
-      const aReal = a.source === 'homepage-link' ? 0 : 1;
-      const bReal = b.source === 'homepage-link' ? 0 : 1;
-      if (aReal !== bReal) return aReal - bReal;
-      const aRev = REVIEW_URL_RE.test(a.url) ? 0 : 1;
-      const bRev = REVIEW_URL_RE.test(b.url) ? 0 : 1;
-      if (aRev !== bRev) return aRev - bRev;
-      const aSvc = classifyPage(a.url) === 'services' ? 0 : 1;
-      const bSvc = classifyPage(b.url) === 'services' ? 0 : 1;
-      return aSvc - bSvc;
-    });
+    // Sort deterministically so repeated scans choose the same priority pages.
+    candidates.sort(compareCrawlCandidates);
 
     // ── Crawl priority pages ──────────────────────────────────────
     for (const candidate of candidates) {
@@ -1281,7 +1309,7 @@ async function crawlWithHttp(startUrl) {
   const visited = new Set([urlKey(finalHomeUrl)]);
   const origin  = new URL(finalHomeUrl).origin;
 
-  const slugCandidates = PRIORITY_SLUGS.map(s => ({ url: origin + s, source: 'slug-guess' }));
+  const slugCandidates = PRIORITY_SLUGS.map((s, priority) => ({ url: origin + s, source: 'slug-guess', priority }));
   const homepageLinks  = extractInternalLinks(homepageHtml, finalHomeUrl);
   const keywordLinks   = homepageLinks
     .filter(link => {
@@ -1289,7 +1317,7 @@ async function crawlWithHttp(startUrl) {
         return PRIORITY_LINK_KEYWORDS.some(kw => path.includes(kw))
           || SERVICE_TERMS.some(t => path.includes(t.split(' ')[0]));
       })
-    .map(url => ({ url, source: 'homepage-link' }));
+    .map((url, priority) => ({ url, source: 'homepage-link', priority }));
 
   const seen       = new Set(visited);
   const candidates = [];
@@ -1299,6 +1327,7 @@ async function crawlWithHttp(startUrl) {
     seen.add(key);
     candidates.push(item);
   }
+  candidates.sort(compareCrawlCandidates);
 
   // Batch 3 at a time
   for (let i = 0; i < candidates.length && pages.length < MAX_PAGES && Date.now() < deadline; i += 3) {
@@ -3932,4 +3961,5 @@ module.exports = {
   detectTrustSignals,
   detectLocalSEO,
   calculateScore,
+  compareCrawlCandidates,
 };
