@@ -1,5 +1,7 @@
 alter table public.leads add column if not exists industry text;
 
+drop function if exists public.claim_due_lead_followups(integer);
+
 create or replace function public.claim_due_lead_followups(batch_size integer default 10)
 returns table (
   id uuid,
