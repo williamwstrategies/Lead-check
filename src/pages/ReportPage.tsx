@@ -3,7 +3,6 @@ import { CheckCircle2, CircleAlert, RotateCcw, Save, TriangleAlert } from 'lucid
 import type { FeatureFlags, LeadCheckReport, ScanRequest } from '../../shared/leadcheck';
 import { ReportSections } from '../components/ReportSections';
 import { brand } from '../config/brand';
-import { requestServiceHelp } from '../lib/api';
 import { saveReportLocally } from '../lib/reportStorage';
 import { trackEvent } from '../lib/analytics';
 import { getScoreStatusView } from '../lib/reportStatus';
@@ -14,6 +13,8 @@ interface ReportPageProps {
   onStartScan: (input: ScanRequest) => void;
   onNavigate: (path: string) => void;
 }
+
+const WEBSITE_STRATEGY_CALL_URL = 'https://api.wstrategiescanada.ca/widget/bookings/website-strategy-call-ws';
 
 export function ReportPage({ report, features, onStartScan, onNavigate }: ReportPageProps) {
   const [message, setMessage] = useState('');
@@ -47,10 +48,16 @@ export function ReportPage({ report, features, onStartScan, onNavigate }: Report
     void trackEvent('report_saved', { reportId: report.id, domain: report.requestedWebsite.normalizedDomain });
   }
 
-  async function serviceHelp() {
+  function serviceHelp() {
     if (!report) return;
-    setMessage("Thanks. We've recorded that you're interested in help improving this website.");
-    await requestServiceHelp(report.id, report.requestedWebsite.url).catch(() => undefined);
+    void trackEvent('help_cta_clicked', {
+      scan_id: report.scan.id,
+      website: report.requestedWebsite.url,
+      domain: report.requestedWebsite.normalizedDomain,
+      industry: report.businessContext.businessCategory || '',
+      leadcheck_score: Math.round(report.score.score),
+      destination: 'google_calendar',
+    }).catch(() => undefined);
   }
 
   const topOpportunity = report.opportunities[0] || null;
@@ -152,7 +159,12 @@ export function ReportPage({ report, features, onStartScan, onNavigate }: Report
         </div>
       </header>
       {message ? <p className="inline-message">{message}</p> : null}
-      <ReportSections report={report} features={features} onServiceHelp={serviceHelp} />
+      <ReportSections
+        report={report}
+        features={features}
+        onServiceHelp={serviceHelp}
+        serviceHelpUrl={WEBSITE_STRATEGY_CALL_URL}
+      />
     </article>
   );
 }

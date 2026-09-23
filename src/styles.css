@@ -1855,7 +1855,7 @@ p {
   }
 
   .report-actions button,
-  .service-help button {
+  .service-help .secondary-action {
     width: 100%;
   }
 

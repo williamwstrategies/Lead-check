@@ -8,6 +8,7 @@ interface ReportSectionsProps {
   report: LeadCheckReport;
   features: FeatureFlags;
   onServiceHelp: () => void;
+  serviceHelpUrl: string;
 }
 
 const categoryOrder: ReportCategoryKey[] = [
@@ -18,7 +19,7 @@ const categoryOrder: ReportCategoryKey[] = [
   'experience',
 ];
 
-export function ReportSections({ report, features, onServiceHelp }: ReportSectionsProps) {
+export function ReportSections({ report, features, onServiceHelp, serviceHelpUrl }: ReportSectionsProps) {
   const scoreStatus = getScoreStatusView(Math.round(report.score.score));
   const priorityFindings = report.opportunities.slice(0, 3);
   const recommendationHeading = scoreStatus.tone === 'strong' ? 'Remaining Opportunities' : 'Fix These First';
@@ -26,8 +27,6 @@ export function ReportSections({ report, features, onServiceHelp }: ReportSectio
     scoreStatus.tone === 'strong'
       ? 'Your website is already doing a lot well. These are the clearest remaining improvements LeadCheck found.'
       : 'Start with these recommendations before working through the full analysis.';
-  const helpHeading =
-    scoreStatus.tone === 'strong' ? 'Want help with the remaining opportunities?' : 'Want help improving your website?';
 
   return (
     <div className="report-stack">
@@ -135,15 +134,19 @@ export function ReportSections({ report, features, onServiceHelp }: ReportSectio
         <section className="report-section service-help">
           <div>
             <HelpCircle size={22} aria-hidden="true" />
-            <h2>{helpHeading}</h2>
-            <p>
-              If you'd rather have someone help work through these recommendations, tell us what you'd like help with.
-            </p>
+            <h2>Want help improving your website?</h2>
+            <p>We can help you fix the issues LeadCheck found and turn more website visitors into customers.</p>
           </div>
-          <button className="secondary-action" type="button" onClick={onServiceHelp}>
-            Get Help With My Website
+          <a
+            className="secondary-action"
+            href={serviceHelpUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={onServiceHelp}
+          >
+            Book a Free Website Strategy Call
             <ExternalLink size={17} aria-hidden="true" />
-          </button>
+          </a>
         </section>
       ) : null}
     </div>

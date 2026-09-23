@@ -1,5 +1,5 @@
-import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 import type { LeadCheckReport } from '../shared/leadcheck';
 import { ReportSections } from '../src/components/ReportSections';
 import { ScoreCard } from '../src/components/ScoreCard';
@@ -101,6 +101,8 @@ const report: LeadCheckReport = {
   isMock: true,
 };
 
+const bookingUrl = 'https://api.wstrategiescanada.ca/widget/bookings/website-strategy-call-ws';
+
 describe('report rendering', () => {
   it('renders score cards accessibly', () => {
     render(<ScoreCard score={report.score} />);
@@ -118,6 +120,7 @@ describe('report rendering', () => {
           enableCompetitorAnalysis: false,
         }}
         onServiceHelp={() => undefined}
+        serviceHelpUrl={bookingUrl}
       />
     );
 
@@ -132,5 +135,34 @@ describe('report rendering', () => {
     expect(screen.getAllByText('Website Performance').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Website Experience').length).toBeGreaterThan(0);
     expect(screen.getByText('Full Website Analysis')).toBeInTheDocument();
+  });
+
+  it('renders the report help CTA as a new-tab booking link', () => {
+    const onServiceHelp = vi.fn();
+    render(
+      <ReportSections
+        report={report}
+        features={{
+          enableServiceHelpCta: true,
+          enableAiVisibility: false,
+          enableCompetitorAnalysis: false,
+        }}
+        onServiceHelp={onServiceHelp}
+        serviceHelpUrl={bookingUrl}
+      />
+    );
+
+    expect(screen.getByText('Want help improving your website?')).toBeInTheDocument();
+    expect(
+      screen.getByText('We can help you fix the issues LeadCheck found and turn more website visitors into customers.')
+    ).toBeInTheDocument();
+
+    const cta = screen.getByRole('link', { name: /book a free website strategy call/i });
+    expect(cta).toHaveAttribute('href', bookingUrl);
+    expect(cta).toHaveAttribute('target', '_blank');
+    expect(cta).toHaveAttribute('rel', 'noopener noreferrer');
+
+    fireEvent.click(cta);
+    expect(onServiceHelp).toHaveBeenCalledTimes(1);
   });
 });
