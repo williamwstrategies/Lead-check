@@ -12,6 +12,30 @@ export const BUSINESS_CATEGORIES = [
 
 export type BusinessCategory = (typeof BUSINESS_CATEGORIES)[number];
 
+export const LEAD_INDUSTRIES = [
+  'Home Services / Contractor',
+  'Renovation / Remodeling',
+  'Landscaping',
+  'Roofing',
+  'HVAC',
+  'Plumbing',
+  'Electrical',
+  'Excavation',
+  'Painting',
+  'Flooring',
+  'Real Estate',
+  'Mortgage / Financial Services',
+  'Automotive',
+  'Health / Dental',
+  'Professional Services',
+  'Retail',
+  'Restaurant / Hospitality',
+  'Marketing / Web Agency',
+  'Other',
+] as const;
+
+export type LeadIndustry = (typeof LEAD_INDUSTRIES)[number];
+
 export type ScanStatus = 'queued' | 'running' | 'completed' | 'failed';
 
 export type ReportCategoryKey =
@@ -147,6 +171,7 @@ export interface LeadCaptureRequest {
   phone: string;
   email: string;
   businessName: string;
+  industry: LeadIndustry | '';
   websiteUrl: string;
   scanId: string;
   attribution?: AttributionFields;
@@ -160,6 +185,7 @@ export interface LeadRecord extends AttributionFields {
   phone: string;
   email: string;
   business_name: string;
+  industry?: LeadIndustry | null;
   website_url: string;
   normalized_domain: string;
   scan_id: string;

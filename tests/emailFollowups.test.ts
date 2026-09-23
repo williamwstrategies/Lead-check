@@ -8,6 +8,7 @@ import {
 } from '../shared/emailFollowups';
 
 const migrationPath = path.resolve('supabase/migrations/202609220003_email_followups.sql');
+const industryMigrationPath = path.resolve('supabase/migrations/202609230001_add_lead_industry.sql');
 
 describe('email follow-up consent and suppression', () => {
   it('schedules three promotional follow-ups only when consent is checked', () => {
@@ -99,5 +100,13 @@ describe('email follow-up consent and suppression', () => {
     expect(migration).toContain('create or replace function public.unsubscribe_leadcheck_token');
     expect(migration).toContain('subscribed = false');
     expect(migration).toContain("suppression_reason = 'unsubscribed'");
+  });
+
+  it('keeps industry nullable so historical leads continue to work', () => {
+    const migration = fs.readFileSync(industryMigrationPath, 'utf8').toLowerCase();
+
+    expect(migration).toContain('alter table public.leads add column if not exists industry text;');
+    expect(migration).not.toContain('industry text not null');
+    expect(migration).toContain('l.industry');
   });
 });

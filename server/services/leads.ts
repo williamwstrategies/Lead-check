@@ -1,5 +1,6 @@
 import crypto from 'node:crypto';
-import type { ApiErrorBody, AttributionFields, LeadCaptureRequest, LeadRecord } from '../../shared/leadcheck.js';
+import type { ApiErrorBody, AttributionFields, LeadCaptureRequest, LeadIndustry, LeadRecord } from '../../shared/leadcheck.js';
+import { LEAD_INDUSTRIES } from '../../shared/leadcheck.js';
 import { normalizeWebsiteUrl } from '../lib/url.js';
 import { getSupabaseAdmin } from './persistence.js';
 
@@ -15,6 +16,8 @@ const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'ut
 const ATTRIBUTION_KEYS = [...UTM_KEYS, 'fbclid', 'gclid', 'referrer'] as const;
 const OPTIONAL_DB_ATTRIBUTION_KEYS = ['fbclid', 'gclid', 'referrer'] as const;
 const OPTIONAL_DB_CONSENT_KEYS = ['marketing_consent', 'marketing_consent_at'] as const;
+const OPTIONAL_DB_SEGMENTATION_KEYS = ['industry'] as const;
+const INDUSTRY_VALUES = new Set<string>(LEAD_INDUSTRIES);
 
 export class LeadCaptureError extends Error {
   statusCode: number;
@@ -83,8 +86,21 @@ function isMissingOptionalAttributionColumn(error: { code?: string; message?: st
   const message = `${error.message || ''} ${details}`.toLowerCase();
   return (
     error.code === 'PGRST204' &&
-    [...OPTIONAL_DB_ATTRIBUTION_KEYS, ...OPTIONAL_DB_CONSENT_KEYS].some(key => message.includes(key.toLowerCase()))
+    [...OPTIONAL_DB_ATTRIBUTION_KEYS, ...OPTIONAL_DB_CONSENT_KEYS, ...OPTIONAL_DB_SEGMENTATION_KEYS].some(key =>
+      message.includes(key.toLowerCase())
+    )
   );
+}
+
+function normalizeIndustry(value: unknown): LeadIndustry {
+  const industry = cleanText(value, 80);
+  if (!INDUSTRY_VALUES.has(industry)) {
+    throw new LeadCaptureError(422, {
+      error: 'Select your industry.',
+      code: 'invalid_industry',
+    });
+  }
+  return industry as LeadIndustry;
 }
 
 function leadId(input: LeadCaptureRequest, normalizedDomain: string, email: string): string {
@@ -114,6 +130,7 @@ export async function captureLead(input: LeadCaptureRequest, anonymousId = ''): 
       code: 'missing_business_name',
     });
   }
+  const industry = normalizeIndustry(input.industry);
   if (!/^scan_[a-zA-Z0-9_-]{12,80}$/.test(scanId)) {
     throw new LeadCaptureError(422, {
       error: 'The scan could not be associated with this lead. Please restart the scan.',
@@ -140,6 +157,7 @@ export async function captureLead(input: LeadCaptureRequest, anonymousId = ''): 
     phone,
     email,
     business_name: businessName,
+    industry,
     website_url: website.url,
     normalized_domain: website.normalizedDomain,
     scan_id: scanId,
@@ -163,6 +181,7 @@ export async function captureLead(input: LeadCaptureRequest, anonymousId = ''): 
     phone: lead.phone,
     email: lead.email,
     business_name: lead.business_name,
+    industry: lead.industry || null,
     website_url: lead.website_url,
     normalized_domain: lead.normalized_domain,
     scan_id: lead.scan_id,
@@ -181,13 +200,13 @@ export async function captureLead(input: LeadCaptureRequest, anonymousId = ''): 
 
   if (error && isMissingOptionalAttributionColumn(error)) {
     const fallbackPayload = { ...leadPayload };
-    for (const key of [...OPTIONAL_DB_ATTRIBUTION_KEYS, ...OPTIONAL_DB_CONSENT_KEYS]) {
+    for (const key of [...OPTIONAL_DB_ATTRIBUTION_KEYS, ...OPTIONAL_DB_CONSENT_KEYS, ...OPTIONAL_DB_SEGMENTATION_KEYS]) {
       delete fallbackPayload[key];
     }
     const retry = await supabase.from('leads').insert(fallbackPayload);
     error = retry.error;
     if (!error) {
-      console.warn('[LeadCheck] Lead saved without optional attribution or marketing consent columns. Run the latest Supabase migration.');
+      console.warn('[LeadCheck] Lead saved without optional attribution, industry, or marketing consent columns. Run the latest Supabase migration.');
     }
   }
 

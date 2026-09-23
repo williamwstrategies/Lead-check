@@ -8,6 +8,7 @@ interface ClaimedDelivery {
   email_type: FollowupEmailType;
   first_name: string | null;
   business_name: string | null;
+  industry: string | null;
   website_url: string | null;
   unsubscribe_token: string;
 }
@@ -103,6 +104,7 @@ Deno.serve(async request => {
       {
         first_name: delivery.first_name,
         business_name: delivery.business_name,
+        industry: delivery.industry,
         website_url: delivery.website_url,
       },
       unsubscribeUrl

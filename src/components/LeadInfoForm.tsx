@@ -1,6 +1,7 @@
 import { FormEvent, useEffect, useRef, useState } from 'react';
-import { Mail, Phone, UserRound, Building2 } from 'lucide-react';
-import type { AttributionFields, LeadCaptureResponse } from '../../shared/leadcheck';
+import { Mail, Phone, UserRound, Building2, BriefcaseBusiness } from 'lucide-react';
+import type { AttributionFields, LeadCaptureResponse, LeadIndustry } from '../../shared/leadcheck';
+import { LEAD_INDUSTRIES } from '../../shared/leadcheck';
 import { submitLeadInfo } from '../lib/api';
 import { trackEvent, trackMetaPixelEvent } from '../lib/analytics';
 
@@ -20,6 +21,7 @@ export function LeadInfoForm({ scanId, websiteUrl, attribution, onSubmitted }: L
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [businessName, setBusinessName] = useState('');
+  const [industry, setIndustry] = useState<LeadIndustry | ''>('');
   const [marketingConsent, setMarketingConsent] = useState(false);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -40,16 +42,20 @@ export function LeadInfoForm({ scanId, websiteUrl, attribution, onSubmitted }: L
       setError('Enter your first name.');
       return;
     }
-    if (!phone.trim()) {
-      setError('Enter your phone number.');
+    if (!businessName.trim()) {
+      setError('Enter your business name.');
+      return;
+    }
+    if (!industry) {
+      setError('Select your industry.');
       return;
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
       setError('Enter a valid email address.');
       return;
     }
-    if (!businessName.trim()) {
-      setError('Enter your business name.');
+    if (!phone.trim()) {
+      setError('Enter your phone number.');
       return;
     }
 
@@ -62,6 +68,7 @@ export function LeadInfoForm({ scanId, websiteUrl, attribution, onSubmitted }: L
         phone: phone.trim(),
         email: email.trim(),
         businessName: businessName.trim(),
+        industry,
         websiteUrl,
         scanId,
         attribution,
@@ -95,6 +102,51 @@ export function LeadInfoForm({ scanId, websiteUrl, attribution, onSubmitted }: L
           onChange={event => setFirstName(event.target.value)}
           autoComplete="given-name"
           name="firstName"
+          required
+        />
+      </label>
+
+      <label className="field">
+        <span>
+          <Building2 size={16} aria-hidden="true" />
+          Business Name
+        </span>
+        <input
+          value={businessName}
+          onChange={event => setBusinessName(event.target.value)}
+          autoComplete="organization"
+          name="businessName"
+          required
+        />
+      </label>
+
+      <label className="field">
+        <span>
+          <BriefcaseBusiness size={16} aria-hidden="true" />
+          What type of business do you run?
+        </span>
+        <select value={industry} onChange={event => setIndustry(event.target.value as LeadIndustry | '')} name="industry" required>
+          <option value="">Select your industry</option>
+          {LEAD_INDUSTRIES.map(option => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+      </label>
+
+      <label className="field">
+        <span>
+          <Mail size={16} aria-hidden="true" />
+          Email Address
+        </span>
+        <input
+          value={email}
+          onChange={event => setEmail(event.target.value)}
+          type="email"
+          autoComplete="email"
+          name="email"
+          required
         />
       </label>
 
@@ -110,33 +162,7 @@ export function LeadInfoForm({ scanId, websiteUrl, attribution, onSubmitted }: L
           inputMode="tel"
           autoComplete="tel"
           name="phone"
-        />
-      </label>
-
-      <label className="field">
-        <span>
-          <Mail size={16} aria-hidden="true" />
-          Email Address
-        </span>
-        <input
-          value={email}
-          onChange={event => setEmail(event.target.value)}
-          type="email"
-          autoComplete="email"
-          name="email"
-        />
-      </label>
-
-      <label className="field">
-        <span>
-          <Building2 size={16} aria-hidden="true" />
-          Business Name
-        </span>
-        <input
-          value={businessName}
-          onChange={event => setBusinessName(event.target.value)}
-          autoComplete="organization"
-          name="businessName"
+          required
         />
       </label>
 
@@ -147,7 +173,13 @@ export function LeadInfoForm({ scanId, websiteUrl, attribution, onSubmitted }: L
           type="checkbox"
           name="marketingConsent"
         />
-        <span>Send me occasional website tips and LeadCheck updates.</span>
+        <span className="consent-copy">
+          <span className="consent-headline">Send me free tips to improve my website</span>
+          <span className="consent-support">
+            Get occasional practical tips from LeadCheck to help turn more website visitors into customers. Unsubscribe
+            anytime.
+          </span>
+        </span>
       </label>
 
       <p className="privacy-note">

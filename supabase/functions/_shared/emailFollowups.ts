@@ -3,6 +3,7 @@ export type FollowupEmailType = 'followup_day_1' | 'followup_day_3' | 'followup_
 export interface FollowupLeadProfile {
   first_name?: string | null;
   business_name?: string | null;
+  industry?: string | null;
   website_url?: string | null;
 }
 

@@ -6,12 +6,13 @@ describe('lead capture', () => {
     clearInMemoryLeadsForTests();
   });
 
-  it('saves the four lead fields with website, scan, and attribution data', async () => {
+  it('saves the lead fields with website, scan, attribution, industry, and consent data', async () => {
     const result = await captureLead({
       firstName: ' Maya ',
       phone: '(519) 555-1212',
       email: 'MAYA@EXAMPLE.COM',
       businessName: 'Maya Plumbing',
+      industry: 'Plumbing',
       websiteUrl: 'maya-plumbing.example',
       scanId: 'scan_testlead12345',
       idempotencyKey: 'lead-test-1',
@@ -34,6 +35,7 @@ describe('lead capture', () => {
       phone: '+15195551212',
       email: 'maya@example.com',
       business_name: 'Maya Plumbing',
+      industry: 'Plumbing',
       website_url: 'https://maya-plumbing.example/',
       normalized_domain: 'maya-plumbing.example',
       scan_id: 'scan_testlead12345',
@@ -58,6 +60,7 @@ describe('lead capture', () => {
       phone: '5195551212',
       email: 'maya@example.com',
       businessName: 'Maya Plumbing',
+      industry: 'Home Services / Contractor' as const,
       websiteUrl: 'https://maya-plumbing.example',
       scanId: 'scan_testlead12345',
       idempotencyKey: 'lead-test-2',
@@ -81,11 +84,43 @@ describe('lead capture', () => {
         phone: '123',
         email: 'not-an-email',
         businessName: 'Maya Plumbing',
+        industry: 'Plumbing',
         websiteUrl: 'https://maya-plumbing.example',
         scanId: 'scan_testlead12345',
       })
     ).rejects.toMatchObject({
       body: { code: 'invalid_email' },
     });
+  });
+
+  it('requires a valid industry option', async () => {
+    await expect(
+      captureLead({
+        firstName: 'Maya',
+        phone: '(519) 555-1212',
+        email: 'maya@example.com',
+        businessName: 'Maya Plumbing',
+        industry: '',
+        websiteUrl: 'https://maya-plumbing.example',
+        scanId: 'scan_testlead12345',
+      })
+    ).rejects.toMatchObject({
+      body: { code: 'invalid_industry' },
+    });
+  });
+
+  it('accepts the agency industry option', async () => {
+    const result = await captureLead({
+      firstName: 'Maya',
+      phone: '(519) 555-1212',
+      email: 'maya@example.com',
+      businessName: 'Maya Marketing',
+      industry: 'Marketing / Web Agency',
+      websiteUrl: 'https://maya-marketing.example',
+      scanId: 'scan_testlead12345',
+      idempotencyKey: 'lead-test-agency',
+    });
+
+    expect(result.lead.industry).toBe('Marketing / Web Agency');
   });
 });
