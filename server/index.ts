@@ -2,6 +2,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import cors from 'cors';
 import express from 'express';
+import { blogPosts } from '../shared/blogPosts.js';
 import type { ApiErrorBody, LeadCaptureRequest, ScanRequest } from '../shared/leadcheck.js';
 import { defaultFeatureFlags } from '../shared/leadcheck.js';
 import { clientOrigins, featureFlagsFromEnv, host, port } from './config/env.js';
@@ -13,6 +14,43 @@ import { scanRateLimit } from './services/rateLimit.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+function publicOrigin(): string {
+  const configured =
+    process.env.PUBLIC_SITE_URL || process.env.APP_ORIGIN || process.env.RENDER_EXTERNAL_URL || 'https://leadcheck.ca';
+  return configured.split(',')[0].trim().replace(/\/$/, '');
+}
+
+function xmlEscape(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+}
+
+function publicUrl(pathname: string): string {
+  return `${publicOrigin()}${pathname}`;
+}
+
+function sitemapXml(): string {
+  const staticPaths = ['/', '/scan', '/blog', '/privacy', '/terms', '/support'];
+  const blogPaths = blogPosts.map(post => `/blog/${post.slug}`);
+  const urls = [...staticPaths, ...blogPaths];
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls
+  .map(
+    pathname => `  <url>
+    <loc>${xmlEscape(publicUrl(pathname))}</loc>
+  </url>`
+  )
+  .join('\n')}
+</urlset>
+`;
+}
 
 export function createApp() {
   const app = express();
@@ -59,6 +97,20 @@ export function createApp() {
       },
       supabaseConfigured: Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY),
     });
+  });
+
+  app.get('/sitemap.xml', (_req, res) => {
+    res.type('application/xml').send(sitemapXml());
+  });
+
+  app.get('/robots.txt', (_req, res) => {
+    res
+      .type('text/plain')
+      .send(`User-agent: *
+Allow: /
+
+Sitemap: ${publicUrl('/sitemap.xml')}
+`);
   });
 
   app.post('/api/validate-url', (req, res) => {

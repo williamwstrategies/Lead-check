@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import type { FeatureFlags, LeadCheckReport, ScanRequest } from '../shared/leadcheck';
 import { defaultFeatureFlags } from '../shared/leadcheck';
 import { AppShell } from './components/AppShell';
@@ -15,8 +15,17 @@ import { captureAttributionFromUrl } from './lib/attribution';
 import { findSavedReport, loadSavedReports, saveReportLocally } from './lib/reportStorage';
 import { trackEvent } from './lib/analytics';
 
+const BlogIndexPage = lazy(() =>
+  import('./pages/BlogIndexPage').then(module => ({ default: module.BlogIndexPage }))
+);
+const BlogPostPage = lazy(() =>
+  import('./pages/BlogPostPage').then(module => ({ default: module.BlogPostPage }))
+);
+
 type RouteName =
   | 'landing'
+  | 'blog'
+  | 'blogPost'
   | 'dashboard'
   | 'scan'
   | 'progress'
@@ -31,9 +40,14 @@ interface RouteState {
   name: RouteName;
   path: string;
   reportId?: string;
+  blogSlug?: string;
 }
 
 function parseRoute(pathname: string): RouteState {
+  if (pathname === '/blog') return { name: 'blog', path: pathname };
+  if (pathname.startsWith('/blog/')) {
+    return { name: 'blogPost', path: pathname, blogSlug: decodeURIComponent(pathname.replace('/blog/', '')) };
+  }
   if (pathname === '/dashboard') return { name: 'dashboard', path: pathname };
   if (pathname === '/scan/progress') return { name: 'progress', path: pathname };
   if (pathname === '/scan') return { name: 'scan', path: pathname };
@@ -119,6 +133,10 @@ export function App() {
 
   const routeContent = useMemo(() => {
     if (route.name === 'dashboard') return <DashboardPage reports={reports} onNavigate={navigate} />;
+    if (route.name === 'blog') return <BlogIndexPage onNavigate={navigate} onStartScan={startScan} />;
+    if (route.name === 'blogPost') {
+      return <BlogPostPage slug={route.blogSlug} onNavigate={navigate} onStartScan={startScan} />;
+    }
     if (route.name === 'scan') {
       return (
         <>
@@ -141,7 +159,7 @@ export function App() {
 
   return (
     <AppShell currentPath={route.path} onNavigate={navigate}>
-      {routeContent}
+      <Suspense fallback={<div className="page-panel">Loading...</div>}>{routeContent}</Suspense>
     </AppShell>
   );
 }

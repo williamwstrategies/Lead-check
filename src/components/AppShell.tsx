@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { BarChart3, FileText, Gauge } from 'lucide-react';
+import { BarChart3, BookOpenText, FileText, Gauge } from 'lucide-react';
 import { brand } from '../config/brand';
 
 interface AppShellProps {
@@ -10,6 +10,7 @@ interface AppShellProps {
 
 const navItems = [
   { label: 'Scan Website', path: '/scan', icon: Gauge },
+  { label: 'Blog', path: '/blog', icon: BookOpenText },
   { label: 'My Reports', path: '/reports', icon: FileText },
 ];
 
@@ -52,6 +53,9 @@ export function AppShell({ children, currentPath, onNavigate }: AppShellProps) {
               <button className="nav-item" type="button" onClick={() => scrollToLandingSection('faq')}>
                 FAQ
               </button>
+              <button className="nav-item" type="button" onClick={() => onNavigate('/blog')}>
+                Blog
+              </button>
             </nav>
             <button className="primary-action header-action" type="button" onClick={() => scrollToLandingSection('leadcheck-start')}>
               <BarChart3 size={17} aria-hidden="true" />
@@ -93,6 +97,7 @@ export function AppShell({ children, currentPath, onNavigate }: AppShellProps) {
         <div className="footer-links" aria-label="Footer links">
           <button type="button" onClick={() => onNavigate('/privacy')}>Privacy Policy</button>
           <button type="button" onClick={() => onNavigate('/terms')}>Terms</button>
+          <button type="button" onClick={() => onNavigate('/blog')}>Blog</button>
           <button type="button" onClick={() => onNavigate('/support')}>Support</button>
         </div>
         <span className="footer-note">© {new Date().getFullYear()} {brand.name}</span>

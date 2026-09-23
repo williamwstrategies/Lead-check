@@ -18,6 +18,8 @@ services:
           type: web
           name: leadcheck
           envVarKey: RENDER_EXTERNAL_URL
+      - key: PUBLIC_SITE_URL
+        value: https://leadcheck.ca
       - key: ENABLE_SERVICE_HELP_CTA
         value: "true"
       - key: ENABLE_AI_VISIBILITY
