@@ -35,7 +35,7 @@ export function ReportPage({ report, features, onStartScan, onNavigate }: Report
         <h1>Report not found</h1>
         <p>Run a new LeadCheck scan to create a fresh report.</p>
         <button className="primary-action" type="button" onClick={() => onNavigate('/scan')}>
-          Scan My Website
+          Check My Website
         </button>
       </section>
     );
@@ -81,7 +81,7 @@ export function ReportPage({ report, features, onStartScan, onNavigate }: Report
         <div className="report-header-main">
           <div className="report-kicker">
             <span>{brand.name}</span>
-            <span>Website Growth Report</span>
+            <span>Website Lead Report</span>
           </div>
           <p className="eyebrow">Analyzed Website</p>
           <h1>{scoreStatus.headline}</h1>
@@ -99,7 +99,7 @@ export function ReportPage({ report, features, onStartScan, onNavigate }: Report
               <small>/100</small>
             </div>
             <div>
-              <p className="eyebrow">LeadCheck Score</p>
+              <p className="eyebrow">Website Lead Score</p>
               <h2>
                 <ScoreStatusIcon size={24} aria-hidden="true" />
                 {scoreStatus.label}
@@ -113,7 +113,7 @@ export function ReportPage({ report, features, onStartScan, onNavigate }: Report
           <div className="report-summary-strip">
             <span>
               <strong>{scoreValue}/100</strong>
-              LeadCheck Score
+              Website Lead Score
             </span>
             <span>
               <strong>{opportunityCount}</strong>
@@ -127,7 +127,7 @@ export function ReportPage({ report, features, onStartScan, onNavigate }: Report
             </span>
             <span>
               <strong>{topOpportunity ? `#1 ${topOpportunity.title}` : 'No urgent recommendation'}</strong>
-              first recommendation
+              first lead opportunity
             </span>
           </div>
         </div>

@@ -13,25 +13,24 @@ export const BUSINESS_CATEGORIES = [
 export type BusinessCategory = (typeof BUSINESS_CATEGORIES)[number];
 
 export const LEAD_INDUSTRIES = [
-  'Home Services / Contractor',
+  'General Contractor',
   'Renovation / Remodeling',
-  'Landscaping',
   'Roofing',
+  'Landscaping',
   'HVAC',
   'Plumbing',
   'Electrical',
-  'Excavation',
   'Painting',
+  'Excavation',
   'Flooring',
-  'Real Estate',
-  'Mortgage / Financial Services',
-  'Automotive',
-  'Health / Dental',
-  'Professional Services',
-  'Retail',
-  'Restaurant / Hospitality',
-  'Marketing / Web Agency',
-  'Other',
+  'Concrete / Masonry',
+  'Carpentry',
+  'Windows & Doors',
+  'Cleaning',
+  'Pool / Spa',
+  'Pest Control',
+  'Other Home Service',
+  'Other Business',
 ] as const;
 
 export type LeadIndustry = (typeof LEAD_INDUSTRIES)[number];

@@ -124,17 +124,17 @@ describe('report rendering', () => {
       />
     );
 
-    expect(screen.getByText('Your LeadCheck Score')).toBeInTheDocument();
-    expect(screen.getByText('Fix These First')).toBeInTheDocument();
+    expect(screen.getByText('Your Website Lead Score')).toBeInTheDocument();
+    expect(screen.getByText("What's Most Likely Costing You Leads")).toBeInTheDocument();
     expect(screen.getByText('High Priority')).toBeInTheDocument();
-    expect(screen.getByText("What's Working")).toBeInTheDocument();
+    expect(screen.getByText("What's Already Working")).toBeInTheDocument();
     expect(screen.getByText('Working Well')).toBeInTheDocument();
     expect(screen.getAllByText('Google Visibility').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Lead Generation').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Trust').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Turning Visitors Into Leads').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Homeowner Trust').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Website Performance').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Website Experience').length).toBeGreaterThan(0);
-    expect(screen.getByText('Full Website Analysis')).toBeInTheDocument();
+    expect(screen.getByText('Full Website Lead Analysis')).toBeInTheDocument();
   });
 
   it('renders the report help CTA as a new-tab booking link', () => {
@@ -152,9 +152,9 @@ describe('report rendering', () => {
       />
     );
 
-    expect(screen.getByText('Want help improving your website?')).toBeInTheDocument();
+    expect(screen.getByText('Want Help Fixing What LeadCheck Found?')).toBeInTheDocument();
     expect(
-      screen.getByText('We can help you fix the issues LeadCheck found and turn more website visitors into customers.')
+      screen.getByText('We can help you fix the issues that may be stopping your website from generating more leads.')
     ).toBeInTheDocument();
 
     const cta = screen.getByRole('link', { name: /book a free website strategy call/i });

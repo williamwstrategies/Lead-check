@@ -60,7 +60,7 @@ describe('lead capture', () => {
       phone: '5195551212',
       email: 'maya@example.com',
       businessName: 'Maya Plumbing',
-      industry: 'Home Services / Contractor' as const,
+      industry: 'General Contractor' as const,
       websiteUrl: 'https://maya-plumbing.example',
       scanId: 'scan_testlead12345',
       idempotencyKey: 'lead-test-2',
@@ -109,18 +109,18 @@ describe('lead capture', () => {
     });
   });
 
-  it('accepts the agency industry option', async () => {
+  it('accepts the other business industry option', async () => {
     const result = await captureLead({
       firstName: 'Maya',
       phone: '(519) 555-1212',
       email: 'maya@example.com',
-      businessName: 'Maya Marketing',
-      industry: 'Marketing / Web Agency',
-      websiteUrl: 'https://maya-marketing.example',
+      businessName: 'Maya Services',
+      industry: 'Other Business',
+      websiteUrl: 'https://maya-services.example',
       scanId: 'scan_testlead12345',
-      idempotencyKey: 'lead-test-agency',
+      idempotencyKey: 'lead-test-other-business',
     });
 
-    expect(result.lead.industry).toBe('Marketing / Web Agency');
+    expect(result.lead.industry).toBe('Other Business');
   });
 });

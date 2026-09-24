@@ -157,9 +157,9 @@ export function ScanProgressPage({ input, onComplete, onNavigate }: ScanProgress
   const activeStage = scanStages[stageIndex];
   const roundedProgress = Math.round(progressPercent);
   const progressMessage = progressCompleted
-    ? 'Your LeadCheck report is ready'
+    ? 'Your Website Lead Report is ready'
     : scanReady
-      ? 'Finishing your LeadCheck report'
+      ? 'Finishing your Website Lead Report'
       : activeStage.label;
 
   return (
@@ -189,12 +189,12 @@ export function ScanProgressPage({ input, onComplete, onNavigate }: ScanProgress
         ) : (
           <>
             <Loader2 className="spinner" size={32} aria-hidden="true" />
-            <p className="eyebrow">{progressCompleted ? 'Scan Complete' : 'Website Scan In Progress'}</p>
+            <p className="eyebrow">{progressCompleted ? 'Scan Complete' : 'Checking Your Website'}</p>
             <h1>{progressMessage}</h1>
             <p>
               {leadSubmitted
                 ? 'Thanks. We are finishing your scan and preparing your report.'
-                : "We're checking multiple pages across your website and turning the findings into a plain-language report."}
+                : "We're checking whether your website makes it easy for homeowners to understand, trust, and contact your business."}
             </p>
             {elapsedSeconds >= 12 && !scanReady ? (
               <p className="muted">This usually takes about a minute. Larger websites can take a little longer.</p>
@@ -217,19 +217,19 @@ export function ScanProgressPage({ input, onComplete, onNavigate }: ScanProgress
           <div className="lead-submitted-state">
             <p className="eyebrow">Try Again</p>
             <h2>The scan did not complete.</h2>
-            <p>Start a new scan when you are ready. We will keep the next report tied to the website you submit.</p>
+            <p>Start a new check when you are ready. We will keep the next report tied to the website you submit.</p>
           </div>
         ) : leadSubmitted ? (
           <div className="lead-submitted-state">
             <p className="eyebrow">Information Saved</p>
             <h2>
               {progressCompleted
-                ? 'Opening your LeadCheck...'
+                ? 'Opening your Website Lead Report...'
                 : scanReady
                   ? 'Finalizing your report.'
                   : 'Your scan is still running.'}
             </h2>
-            <p>Keep this page open. Your LeadCheck report will appear here as soon as the scan is complete.</p>
+            <p>Keep this page open. Your Website Lead Report will appear here as soon as the scan is complete.</p>
           </div>
         ) : input && scanId ? (
           <LeadInfoForm

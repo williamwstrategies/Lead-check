@@ -12,9 +12,9 @@ export function ReportsPage({ reports, onNavigate }: ReportsPageProps) {
       <section className="page-panel empty-state">
         <FileText size={38} aria-hidden="true" />
         <h1>No reports yet</h1>
-        <p>Run a free LeadCheck scan to create your first website growth report.</p>
+        <p>Run a free LeadCheck scan to create your first Website Lead Report.</p>
         <button className="primary-action" type="button" onClick={() => onNavigate('/scan')}>
-          Scan My Website
+          Check My Website
         </button>
       </section>
     );
@@ -24,8 +24,8 @@ export function ReportsPage({ reports, onNavigate }: ReportsPageProps) {
     <section className="page-panel reports-page">
       <div className="section-heading">
         <p className="eyebrow">My Reports</p>
-        <h1>Saved reports</h1>
-        <p>Saved website growth reports from this device appear here.</p>
+        <h1>Saved Website Lead Reports</h1>
+        <p>Saved reports from this device appear here.</p>
       </div>
       <div className="report-list">
         {reports.map(report => (

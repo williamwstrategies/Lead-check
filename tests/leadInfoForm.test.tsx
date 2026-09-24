@@ -17,7 +17,7 @@ vi.mock('../src/lib/analytics', () => ({
 const scanId = 'scan_testlead12345';
 const websiteUrl = 'https://maya-plumbing.example/';
 
-function mockResponse(industry = 'Marketing / Web Agency'): LeadCaptureResponse {
+function mockResponse(industry = 'General Contractor'): LeadCaptureResponse {
   return {
     deduplicated: false,
     lead: {
@@ -25,7 +25,7 @@ function mockResponse(industry = 'Marketing / Web Agency'): LeadCaptureResponse 
       first_name: 'Maya',
       phone: '+15195551212',
       email: 'maya@example.com',
-      business_name: 'Maya Marketing',
+      business_name: 'Maya Contracting',
       industry: industry as LeadCaptureResponse['lead']['industry'],
       website_url: websiteUrl,
       normalized_domain: 'maya-plumbing.example',
@@ -53,7 +53,7 @@ function renderForm(onSubmitted = vi.fn()) {
 
 function fillContactFields() {
   fireEvent.change(screen.getByLabelText(/first name/i), { target: { value: 'Maya' } });
-  fireEvent.change(screen.getByLabelText(/business name/i), { target: { value: 'Maya Marketing' } });
+  fireEvent.change(screen.getByLabelText(/business name/i), { target: { value: 'Maya Contracting' } });
   fireEvent.change(screen.getByLabelText(/email address/i), { target: { value: 'maya@example.com' } });
   fireEvent.change(screen.getByLabelText(/phone number/i), { target: { value: '(519) 555-1212' } });
 }
@@ -70,17 +70,17 @@ describe('LeadInfoForm', () => {
 
     fillContactFields();
     fireEvent.change(screen.getByLabelText(/what type of business/i), {
-      target: { value: 'Marketing / Web Agency' },
+      target: { value: 'General Contractor' },
     });
     fireEvent.click(screen.getByLabelText(/send me free tips to improve my website/i));
-    fireEvent.click(screen.getByRole('button', { name: /get my leadcheck/i }));
+    fireEvent.click(screen.getByRole('button', { name: /get my website lead report/i }));
 
     await waitFor(() => expect(submitLeadInfo).toHaveBeenCalledTimes(1));
     expect(submitLeadInfo).toHaveBeenCalledWith(
       expect.objectContaining({
         firstName: 'Maya',
-        businessName: 'Maya Marketing',
-        industry: 'Marketing / Web Agency',
+        businessName: 'Maya Contracting',
+        industry: 'General Contractor',
         email: 'maya@example.com',
         phone: '(519) 555-1212',
         websiteUrl,

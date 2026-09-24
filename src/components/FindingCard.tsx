@@ -2,20 +2,13 @@ import { useState } from 'react';
 import { ChevronDown, ChevronUp, CircleAlert, Info, TriangleAlert } from 'lucide-react';
 import type { ScanFinding } from '../../shared/leadcheck';
 import { trackEvent } from '../lib/analytics';
+import { reportCategoryLabels } from '../lib/reportLabels';
 import { getFindingPriorityLabel, getFindingTone } from '../lib/reportStatus';
 
 interface FindingCardProps {
   finding: ScanFinding;
   priority?: boolean;
 }
-
-const categoryLabels = {
-  googleVisibility: 'Google Visibility',
-  leadGeneration: 'Lead Generation',
-  trust: 'Trust',
-  performance: 'Website Performance',
-  experience: 'Website Experience',
-};
 
 export function FindingCard({ finding, priority = false }: FindingCardProps) {
   const [open, setOpen] = useState(false);
@@ -43,7 +36,7 @@ export function FindingCard({ finding, priority = false }: FindingCardProps) {
           <PriorityIcon size={14} aria-hidden="true" />
           {priorityLabel}
         </span>
-        <span className={`status-pill ${finding.status}`}>{categoryLabels[finding.category]}</span>
+        <span className={`status-pill ${finding.status}`}>{reportCategoryLabels[finding.category]}</span>
       </div>
       <h3>{finding.title}</h3>
       <p>{finding.summary}</p>
@@ -53,9 +46,11 @@ export function FindingCard({ finding, priority = false }: FindingCardProps) {
       </button>
       {open ? (
         <div className="finding-details">
+          <strong>What we found</strong>
+          <p>{finding.summary}</p>
           <strong>Why this matters</strong>
           <p>{finding.whyItMatters}</p>
-          <strong>What to do</strong>
+          <strong>What to do next</strong>
           <p>{finding.recommendedAction}</p>
         </div>
       ) : null}

@@ -88,8 +88,8 @@ export function LeadInfoForm({ scanId, websiteUrl, attribution, onSubmitted }: L
   return (
     <form className="lead-info-form" onSubmit={submit}>
       <div className="section-heading">
-        <p className="eyebrow">Your LeadCheck Is Being Created</p>
-        <h2>Tell us where to save your results.</h2>
+        <p className="eyebrow">Your Website Lead Report Is Being Created</p>
+        <h2>Tell us where to send your results.</h2>
       </div>
 
       <label className="field">
@@ -176,8 +176,8 @@ export function LeadInfoForm({ scanId, websiteUrl, attribution, onSubmitted }: L
         <span className="consent-copy">
           <span className="consent-headline">Send me free tips to improve my website</span>
           <span className="consent-support">
-            Get occasional practical tips from LeadCheck to help turn more website visitors into customers. Unsubscribe
-            anytime.
+            Get occasional practical tips from LeadCheck to help turn more website visitors into calls and quote
+            requests. Unsubscribe anytime.
           </span>
         </span>
       </label>
@@ -194,7 +194,7 @@ export function LeadInfoForm({ scanId, websiteUrl, attribution, onSubmitted }: L
       ) : null}
 
       <button className="primary-action" type="submit" disabled={submitting || submitted.current}>
-        {submitting ? 'Saving...' : 'Get My LeadCheck'}
+        {submitting ? 'Saving...' : 'Get My Website Lead Report'}
       </button>
     </form>
   );

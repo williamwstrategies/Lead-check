@@ -9,7 +9,7 @@ interface AppShellProps {
 }
 
 const navItems = [
-  { label: 'Scan Website', path: '/scan', icon: Gauge },
+  { label: 'Check Website', path: '/scan', icon: Gauge },
   { label: 'Blog', path: '/blog', icon: BookOpenText },
   { label: 'My Reports', path: '/reports', icon: FileText },
 ];
@@ -59,7 +59,7 @@ export function AppShell({ children, currentPath, onNavigate }: AppShellProps) {
             </nav>
             <button className="primary-action header-action" type="button" onClick={() => scrollToLandingSection('leadcheck-start')}>
               <BarChart3 size={17} aria-hidden="true" />
-              Scan My Website
+              Check My Website
             </button>
           </>
         ) : (
@@ -83,7 +83,7 @@ export function AppShell({ children, currentPath, onNavigate }: AppShellProps) {
             </nav>
             <button className="secondary-action desktop-only" type="button" onClick={() => onNavigate('/scan')}>
               <BarChart3 size={17} aria-hidden="true" />
-              Scan Free
+              Check Free
             </button>
           </>
         )}
@@ -92,7 +92,7 @@ export function AppShell({ children, currentPath, onNavigate }: AppShellProps) {
       <footer className="site-footer">
         <div className="footer-brand">
           <BrandMark />
-          <p>Free website analysis for small businesses that want clearer, more useful websites.</p>
+          <p>Free website lead checks for contractors and home-service businesses that want more calls and quote requests.</p>
         </div>
         <div className="footer-links" aria-label="Footer links">
           <button type="button" onClick={() => onNavigate('/privacy')}>Privacy Policy</button>

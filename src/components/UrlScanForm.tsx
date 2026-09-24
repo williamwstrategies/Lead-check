@@ -8,13 +8,14 @@ interface UrlScanFormProps {
   compact?: boolean;
   initialUrl?: string;
   source?: string;
+  ctaLabel?: string;
 }
 
 function clean(value: string): string {
   return value.trim();
 }
 
-export function UrlScanForm({ onSubmit, compact = false, initialUrl = '', source }: UrlScanFormProps) {
+export function UrlScanForm({ onSubmit, compact = false, initialUrl = '', source, ctaLabel = 'Check My Website Free' }: UrlScanFormProps) {
   const [url, setUrl] = useState(initialUrl);
   const [error, setError] = useState('');
   const errorId = useId();
@@ -52,10 +53,10 @@ export function UrlScanForm({ onSubmit, compact = false, initialUrl = '', source
         </p>
       ) : null}
       <button className="primary-action" type="submit">
-        Scan My Website — Free
+        {ctaLabel}
         <ArrowRight size={18} aria-hidden="true" />
       </button>
-      <p className="free-note">Free website analysis. No credit card required.</p>
+      <p className="free-note">Free • Takes about 60 seconds • No credit card</p>
     </form>
   );
 }

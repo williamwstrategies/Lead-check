@@ -1,7 +1,7 @@
 export const brand = {
   name: 'LeadCheck',
-  tagline: "Find out what's stopping your website from generating more customers.",
-  shortTagline: 'Website Growth Check',
+  tagline: "Find out why your contractor website isn't bringing in more leads.",
+  shortTagline: 'Website Lead Check',
   supportEmail: 'hello@leadcheck.app',
   colors: {
     ink: '#111827',

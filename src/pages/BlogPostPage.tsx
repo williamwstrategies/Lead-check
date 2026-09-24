@@ -100,7 +100,7 @@ export function BlogPostPage({ slug = '', onNavigate, onStartScan }: BlogPostPag
           <div className="blog-sidebar-card">
             <Search size={22} aria-hidden="true" />
             <h2>Check your own website</h2>
-            <p>Get a free LeadCheck report and see what to improve first.</p>
+            <p>Get a free Website Lead Score and see what could be costing you calls and quote requests.</p>
             <UrlScanForm onSubmit={onStartScan} compact source="blog_article" />
           </div>
           <div className="blog-sidebar-card">

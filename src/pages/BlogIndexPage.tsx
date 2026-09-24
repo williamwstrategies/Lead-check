@@ -14,9 +14,9 @@ interface BlogIndexPageProps {
 export function BlogIndexPage({ onNavigate, onStartScan }: BlogIndexPageProps) {
   useEffect(() => {
     setSeoMeta({
-      title: 'Small Business Website and SEO Blog | LeadCheck',
+      title: 'Contractor Website Lead Generation Blog | LeadCheck',
       description:
-        'Practical website, SEO, trust, and lead generation advice for contractors, home-service companies, and local small businesses.',
+        'Practical website, Google visibility, trust, and lead generation advice for contractors and home-service businesses.',
       canonicalPath: '/blog',
     });
   }, []);
@@ -33,16 +33,16 @@ export function BlogIndexPage({ onNavigate, onStartScan }: BlogIndexPageProps) {
       <section className="blog-hero">
         <div>
           <p className="eyebrow">LeadCheck Blog</p>
-          <h1>Practical website advice for small businesses</h1>
+          <h1>Practical website advice for contractors</h1>
           <p className="hero-lede">
-            Guides for improving website leads, Google visibility, trust, page structure, and technical basics without
-            needing to become an SEO expert.
+            Guides for turning more website visitors into calls, quote requests, and jobs without needing to become an
+            SEO expert.
           </p>
         </div>
         <div className="blog-scan-card">
           <Search size={24} aria-hidden="true" />
           <h2>Start with your own website</h2>
-          <p>Run a free LeadCheck to see what may be holding your site back.</p>
+          <p>Run a free LeadCheck to see what may be costing you leads.</p>
           <UrlScanForm onSubmit={onStartScan} compact source="blog_index" />
         </div>
       </section>

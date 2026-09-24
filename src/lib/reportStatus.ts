@@ -18,10 +18,10 @@ export function getScoreStatusView(score: number): ScoreStatusView {
       tone: 'poor',
       label: 'Needs Attention',
       shortLabel: 'Needs Attention',
-      headline: 'Your website has some important opportunities.',
-      supportingCopy: 'LeadCheck found several areas worth addressing. Start with the highest-priority items below.',
+      headline: 'Your website may be costing you calls and quote requests.',
+      supportingCopy: 'LeadCheck found several issues that could make it harder for homeowners to choose your business.',
       scoreCopy:
-        'Your website has several issues that could make it harder for visitors to find, trust, or contact your business.',
+        'Your website has several issues that could make it harder for visitors to call, request a quote, or trust your business.',
     };
   }
 
@@ -30,9 +30,9 @@ export function getScoreStatusView(score: number): ScoreStatusView {
       tone: 'needs-improvement',
       label: 'Needs Improvement',
       shortLabel: 'Needs Improvement',
-      headline: "Your website has a good foundation, but there's room to improve.",
-      supportingCopy: 'LeadCheck found several opportunities that could create a clearer, more effective experience.',
-      scoreCopy: 'Your website has a solid foundation, but several areas could be improved.',
+      headline: "Your website has a foundation, but it could be working harder.",
+      supportingCopy: 'LeadCheck found opportunities that may help turn more visitors into calls and quote requests.',
+      scoreCopy: 'Your website has a workable foundation, but several areas could be improved to support more leads.',
     };
   }
 
@@ -40,10 +40,10 @@ export function getScoreStatusView(score: number): ScoreStatusView {
     tone: 'strong',
     label: 'Strong Website',
     shortLabel: 'Strong',
-    headline: 'Your website has a strong foundation.',
+    headline: 'Your website is doing many of the right things.',
     supportingCopy:
-      "You're doing many of the important things well. Here are the remaining opportunities LeadCheck found.",
-    scoreCopy: 'Your website is performing well across most of the areas LeadCheck analyzed.',
+      "You're giving visitors several good reasons to trust and contact your business. Here are the remaining opportunities LeadCheck found.",
+    scoreCopy: 'Your website is doing well across most of the lead, trust, Google, and mobile signals LeadCheck reviewed.',
   };
 }
 

@@ -12,7 +12,7 @@ const content = {
     eyebrow: 'Privacy',
     title: 'Privacy Policy',
     body: [
-      'LeadCheck collects the public website URL you submit so we can scan the site and create a website growth report.',
+      'LeadCheck collects the public website URL you submit so we can scan the site and create a Website Lead Report.',
       'If you request your results, we collect the first name, phone number, email address, and business name you provide. We associate that information with the submitted website URL, normalized domain, scan ID, and report information.',
       'LeadCheck may store scan status, pages analyzed, findings, scores, recommendations, timestamps, and technical error details needed to operate and improve the product.',
       'We use basic analytics events to understand whether visitors can complete the funnel, including landing views, website submissions, scan starts and completions, lead submissions, report views, opened opportunities, and help requests.',
@@ -27,7 +27,7 @@ const content = {
     eyebrow: 'Terms',
     title: 'Terms of Use',
     body: [
-      'LeadCheck provides automated website analysis for informational purposes. The report is not a guarantee of search rankings, leads, revenue, or business results.',
+      'LeadCheck provides automated website lead analysis for informational purposes. The report is not a guarantee of search rankings, leads, revenue, or business results.',
       'LeadCheck may not detect every website issue, and not every recommendation will improve business performance. Use the report as a practical starting point for review and improvement.',
       'You may scan public websites you own, manage, or are otherwise authorized to review. Do not use LeadCheck to probe private systems, password-protected websites, internal networks, or websites you are not permitted to evaluate.',
       'The beta may change, be unavailable, fail, or produce incomplete results. We may limit or block scans that appear abusive, unsafe, or outside normal product use.',
@@ -61,7 +61,7 @@ export function LegalPage({ kind, onNavigate }: LegalPageProps) {
         </a>
       ) : (
         <button className="primary-action" type="button" onClick={() => onNavigate('/scan')}>
-          Scan My Website
+          Check My Website
         </button>
       )}
     </section>

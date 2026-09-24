@@ -2,6 +2,7 @@ import { CheckCircle2, ExternalLink, HelpCircle } from 'lucide-react';
 import type { FeatureFlags, LeadCheckReport, ReportCategoryKey } from '../../shared/leadcheck';
 import { FindingCard } from './FindingCard';
 import { ScoreCard } from './ScoreCard';
+import { reportCategoryLabels, scoreWithDisplayLabel } from '../lib/reportLabels';
 import { getScoreStatusView } from '../lib/reportStatus';
 
 interface ReportSectionsProps {
@@ -22,20 +23,21 @@ const categoryOrder: ReportCategoryKey[] = [
 export function ReportSections({ report, features, onServiceHelp, serviceHelpUrl }: ReportSectionsProps) {
   const scoreStatus = getScoreStatusView(Math.round(report.score.score));
   const priorityFindings = report.opportunities.slice(0, 3);
-  const recommendationHeading = scoreStatus.tone === 'strong' ? 'Remaining Opportunities' : 'Fix These First';
+  const recommendationHeading =
+    scoreStatus.tone === 'strong' ? 'Remaining Lead Opportunities' : "What's Most Likely Costing You Leads";
   const recommendationCopy =
     scoreStatus.tone === 'strong'
       ? 'Your website is already doing a lot well. These are the clearest remaining improvements LeadCheck found.'
-      : 'Start with these recommendations before working through the full analysis.';
+      : 'Start with the issues most likely to affect calls, quote requests, trust, or local visibility.';
 
   return (
     <div className="report-stack">
       <section className="report-section">
         <div className="section-heading">
-          <p className="eyebrow">LeadCheck Score</p>
-          <h2>Your LeadCheck Score</h2>
+          <p className="eyebrow">Website Lead Score</p>
+          <h2>Your Website Lead Score</h2>
         </div>
-        <ScoreCard score={report.score} large />
+        <ScoreCard score={scoreWithDisplayLabel(report.score, 'Website Lead Score')} large />
       </section>
 
       <section className="report-section" id="recommendations">
@@ -54,7 +56,7 @@ export function ReportSections({ report, features, onServiceHelp, serviceHelpUrl
       <section className="report-section">
         <div className="section-heading">
           <p className="eyebrow">Good Signals</p>
-          <h2>What's Working</h2>
+          <h2>What's Already Working</h2>
         </div>
         <div className="positive-grid">
           {report.positiveFindings.map(item => (
@@ -75,7 +77,7 @@ export function ReportSections({ report, features, onServiceHelp, serviceHelpUrl
           <p className="eyebrow">On-Site Search Signals</p>
           <h2>Google Visibility</h2>
         </div>
-        <ScoreCard score={report.categoryScores.googleVisibility} />
+        <ScoreCard score={scoreWithDisplayLabel(report.categoryScores.googleVisibility)} />
         <div className="mini-finding-list">
           {report.findings
             .filter(finding => finding.category === 'googleVisibility')
@@ -93,9 +95,9 @@ export function ReportSections({ report, features, onServiceHelp, serviceHelpUrl
         <section className="report-section" key={key}>
           <div className="section-heading">
             <p className="eyebrow">{report.categoryScores[key].label}</p>
-            <h2>{report.categoryScores[key].label}</h2>
+            <h2>{reportCategoryLabels[key]}</h2>
           </div>
-          <ScoreCard score={report.categoryScores[key]} />
+          <ScoreCard score={scoreWithDisplayLabel(report.categoryScores[key])} />
           <div className="mini-finding-list">
             {report.findings
               .filter(finding => finding.category === key)
@@ -112,11 +114,11 @@ export function ReportSections({ report, features, onServiceHelp, serviceHelpUrl
 
       <section className="report-section">
         <details className="analysis-details">
-          <summary>Full Website Analysis</summary>
+          <summary>Full Website Lead Analysis</summary>
           <div className="analysis-groups">
             {categoryOrder.map(category => (
               <div key={category}>
-                <h3>{report.categoryScores[category].label}</h3>
+                <h3>{reportCategoryLabels[category]}</h3>
                 {report.findings.filter(finding => finding.category === category).length ? (
                   report.findings
                     .filter(finding => finding.category === category)
@@ -134,8 +136,8 @@ export function ReportSections({ report, features, onServiceHelp, serviceHelpUrl
         <section className="report-section service-help">
           <div>
             <HelpCircle size={22} aria-hidden="true" />
-            <h2>Want help improving your website?</h2>
-            <p>We can help you fix the issues LeadCheck found and turn more website visitors into customers.</p>
+            <h2>Want Help Fixing What LeadCheck Found?</h2>
+            <p>We can help you fix the issues that may be stopping your website from generating more leads.</p>
           </div>
           <a
             className="secondary-action"
