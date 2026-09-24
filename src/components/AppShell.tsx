@@ -53,6 +53,9 @@ export function AppShell({ children, currentPath, onNavigate }: AppShellProps) {
               <button className="nav-item" type="button" onClick={() => scrollToLandingSection('example-report')}>
                 Example Report
               </button>
+              <button className="nav-item" type="button" onClick={() => onNavigate('/blog')}>
+                Blog
+              </button>
             </nav>
             <button className="primary-action header-action" type="button" onClick={() => scrollToLandingSection('leadcheck-start')}>
               <BarChart3 size={17} aria-hidden="true" />
