@@ -1,23 +1,22 @@
 import {
   ArrowRight,
-  BarChart3,
   BriefcaseBusiness,
   CheckCircle2,
   CircleHelp,
-  ClipboardCheck,
-  FileText,
-  Gauge,
+  Droplets,
   Hammer,
   Home,
   Images,
   MapPin,
-  MousePointerClick,
+  Paintbrush,
   PhoneCall,
   Search,
   ShieldCheck,
+  Shovel,
   Smartphone,
   Star,
-  Wrench,
+  ThermometerSun,
+  Zap,
 } from 'lucide-react';
 import type { ScanRequest } from '../../shared/leadcheck';
 import { UrlScanForm } from '../components/UrlScanForm';
@@ -28,100 +27,90 @@ interface LandingPageProps {
   onNavigate: (path: string) => void;
 }
 
+interface LandingPhoto {
+  alt: string;
+  src: string;
+  srcSet: string;
+  source: string;
+}
+
+const photos = {
+  hero: pexelsPhoto('6285155', 'Contractors reviewing plans for a project', 'gustavo-fring-6285155'),
+  renovation: pexelsPhoto('30924413', 'Bright kitchen renovation in progress', 'brettjordan-30924413'),
+  landscape: pexelsPhoto('19271862', 'Finished backyard landscaping project', 'd-ng-thanh-tu-2922122-19271862'),
+  roofing: pexelsPhoto('31771166', 'Roofer installing shingles on a residential roof', 'clement-proust-363898785-31771166'),
+  electrician: pexelsPhoto('21812143', 'Electrician checking wiring in a panel', 'shameer-vayalakkad-hydrose-2602409-21812143'),
+};
+
 const industries = [
-  'Roofing',
-  'Landscaping',
-  'Renovations',
-  'HVAC',
-  'Plumbing',
-  'Electrical',
-  'Painting',
-  'Excavation',
-  'Flooring',
-  'General Contractors',
+  { label: 'Roofing', icon: Home },
+  { label: 'Renovations', icon: Hammer },
+  { label: 'Landscaping', icon: Images },
+  { label: 'HVAC', icon: ThermometerSun },
+  { label: 'Plumbing', icon: Droplets },
+  { label: 'Electrical', icon: Zap },
+  { label: 'Excavation', icon: Shovel },
+  { label: 'Painting', icon: Paintbrush },
 ];
 
-const contractorQuestions = [
+const contractorChecks = [
   {
     icon: PhoneCall,
-    title: 'Can homeowners easily request a quote?',
-    copy: 'People should know exactly how to call, book, or ask for an estimate without hunting around your site.',
+    title: 'Requesting a quote',
+    copy: 'Can someone immediately see how to call, book, or request an estimate?',
   },
   {
     icon: ShieldCheck,
-    title: 'Does your website give people enough reason to trust you?',
-    copy: 'Reviews, project photos, warranties, and clear business details can reduce hesitation before someone reaches out.',
-  },
-  {
-    icon: MapPin,
-    title: 'Can Google understand where you provide services?',
-    copy: 'Your services and service areas need to be clear enough for local homeowners and Google to connect the dots.',
+    title: 'Reviews & trust',
+    copy: 'Are you giving homeowners enough reason to trust you before they reach out?',
   },
   {
     icon: Images,
-    title: "Does your site clearly show the work you've completed?",
-    copy: 'Real projects and before-and-after proof can make a contractor feel safer to choose.',
-  },
-  {
-    icon: Smartphone,
-    title: 'Does the site work properly on a phone?',
-    copy: 'Many homeowners check contractors from a phone. Slow, cramped, or confusing pages can cost calls.',
+    title: 'Projects',
+    copy: 'Can visitors easily see examples of completed work and proof of quality?',
   },
   {
     icon: Hammer,
-    title: 'Are your services clearly explained?',
-    copy: 'Visitors should quickly understand what you do, who you help, and why they should contact you.',
+    title: 'Services',
+    copy: 'Is it obvious what work you actually do and which jobs are a good fit?',
   },
-];
-
-const valueCards = [
   {
-    icon: Gauge,
-    title: 'Your Website Lead Score',
-    copy: 'See how well your website is set up to turn visitors into calls, quote requests, and potential jobs.',
+    icon: MapPin,
+    title: 'Service areas',
+    copy: 'Can customers and Google understand where your company works?',
+  },
+  {
+    icon: Smartphone,
+    title: 'Mobile experience',
+    copy: 'Can someone use your website easily from the phone in their hand?',
   },
   {
     icon: Search,
-    title: 'What could be costing you leads',
-    copy: 'See the highest-priority problems first, explained in plain business language.',
+    title: 'Google visibility setup',
+    copy: 'Does your website clearly explain your services, locations, and pages?',
   },
   {
-    icon: CheckCircle2,
-    title: "What's already working",
-    copy: 'Know what your website is already doing well so you do not waste time fixing the wrong things.',
-  },
-  {
-    icon: ClipboardCheck,
-    title: 'What to fix first',
-    copy: 'Get clear recommendations without needing to learn SEO, web design, or website jargon.',
+    icon: PhoneCall,
+    title: 'Contact options',
+    copy: 'Is calling, emailing, or requesting an estimate simple across key pages?',
   },
 ];
 
 const processSteps = [
   {
-    icon: MousePointerClick,
+    label: '01',
     title: 'Enter your website',
-    copy: 'Paste your contractor or home-service business website URL.',
+    copy: 'Paste your contractor or home-service website. No setup, no credit card, no account required to start.',
   },
   {
-    icon: BarChart3,
+    label: '02',
     title: 'LeadCheck analyzes it',
-    copy: 'We check the website signals that can affect calls, quote requests, trust, and local visibility.',
+    copy: 'We look for the website signals that can affect calls, quote requests, trust, and local visibility.',
   },
   {
-    icon: Gauge,
-    title: 'Get your Website Lead Score',
-    copy: 'See how ready your website is to turn visitors into leads.',
-  },
-  {
-    icon: FileText,
-    title: 'See what could be costing you leads',
-    copy: 'Review the biggest opportunities and the things already working.',
-  },
-  {
-    icon: Wrench,
-    title: 'Fix the biggest opportunities',
-    copy: 'Use the report to decide what deserves attention first.',
+    label: '03',
+    title: 'See what to fix first',
+    copy: 'Get your Website Lead Score and a prioritized report written in plain business language.',
   },
 ];
 
@@ -138,7 +127,7 @@ const faqs = [
   {
     question: 'Do I need to understand SEO?',
     answer:
-      'No. LeadCheck translates website issues into plain language about calls, quotes, trust, Google, and local customers.',
+      'No. LeadCheck translates website issues into plain language about calls, quote requests, homeowner trust, Google, and local customers.',
   },
   {
     question: 'How long does a scan take?',
@@ -156,18 +145,192 @@ const faqs = [
   },
 ];
 
+function pexelsPhoto(id: string, alt: string, slug: string): LandingPhoto {
+  const base = `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg`;
+  return {
+    alt,
+    src: `${base}?auto=compress&cs=tinysrgb&w=900`,
+    srcSet: [
+      `${base}?auto=compress&cs=tinysrgb&w=640 640w`,
+      `${base}?auto=compress&cs=tinysrgb&w=900 900w`,
+      `${base}?auto=compress&cs=tinysrgb&w=1400 1400w`,
+    ].join(', '),
+    source: `https://www.pexels.com/photo/${slug}/`,
+  };
+}
+
+function LandingImage({
+  photo,
+  className,
+  loading = 'lazy',
+  sizes = '(min-width: 900px) 50vw, 100vw',
+}: {
+  photo: LandingPhoto;
+  className: string;
+  loading?: 'eager' | 'lazy';
+  sizes?: string;
+}) {
+  return (
+    <img
+      className={className}
+      src={photo.src}
+      srcSet={photo.srcSet}
+      sizes={sizes}
+      alt={photo.alt}
+      loading={loading}
+      decoding="async"
+    />
+  );
+}
+
+function HeroScoreCard() {
+  return (
+    <aside className="hero-score-card" aria-label="Example LeadCheck score preview">
+      <div className="hero-score-topline">
+        <span>Website Lead Score</span>
+        <strong>Example Report</strong>
+      </div>
+      <div className="hero-score-body">
+        <div className="hero-score-ring" aria-hidden="true">
+          <span>58</span>
+          <small>/100</small>
+        </div>
+        <div>
+          <p>Needs Attention</p>
+          <strong>4 issues could be costing you leads</strong>
+          <button type="button" onClick={() => document.getElementById('example-report')?.scrollIntoView({ behavior: 'smooth' })}>
+            View LeadCheck
+            <ArrowRight size={15} aria-hidden="true" />
+          </button>
+        </div>
+      </div>
+      <div className="hero-score-findings">
+        <span className="high">Quote request is not obvious</span>
+        <span className="medium">Trust could be stronger</span>
+        <span className="good">Phone number is easy to find</span>
+      </div>
+    </aside>
+  );
+}
+
+function HomeownerWebsiteMock() {
+  return (
+    <div className="homeowner-mockup" aria-label="Annotated example contractor website">
+      <div className="mock-browser">
+        <div className="mock-browser-bar" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </div>
+        <div className="mock-website">
+          <div className="mock-hero">
+            <p>Oakridge Renovations</p>
+            <h3>Quality Home Renovations</h3>
+            <span>Serving local homeowners</span>
+          </div>
+          <div className="mock-content">
+            <span />
+            <span />
+            <span />
+          </div>
+          <div className="mock-gallery">
+            <i />
+            <i />
+            <i />
+          </div>
+        </div>
+      </div>
+      <div className="mock-callouts">
+        <span className="mock-callout high quote">No obvious way to request a quote</span>
+        <span className="mock-callout high area">Service area is not clear</span>
+        <span className="mock-callout medium proof">Not enough recent project proof</span>
+        <span className="mock-callout medium reviews">Reviews are difficult to find</span>
+        <span className="mock-callout good phone">Phone number is easy to find</span>
+      </div>
+    </div>
+  );
+}
+
+function ExampleReportPreview({ onStartScan }: { onStartScan: (input: ScanRequest) => void }) {
+  return (
+    <section className="content-band report-showcase" id="example-report">
+      <div className="section-heading centered">
+        <p className="eyebrow">Example Report</p>
+        <h2>See the report a contractor can understand in seconds</h2>
+        <p>
+          LeadCheck turns website issues into clear priorities, so owners can see what may be costing calls and quote
+          requests.
+        </p>
+      </div>
+      <article className="lead-report-demo" aria-label="Example LeadCheck report for Oakridge Renovations">
+        <div className="report-demo-header">
+          <div>
+            <p className="eyebrow">Oakridge Renovations</p>
+            <h3>Website Lead Score</h3>
+            <p>Your website has several issues that could make it harder to turn visitors into calls and quote requests.</p>
+          </div>
+          <div className="report-demo-score">
+            <span>58</span>
+            <small>/100</small>
+            <strong>Needs Attention</strong>
+          </div>
+        </div>
+        <div className="report-demo-body">
+          <div className="report-demo-list">
+            <p className="eyebrow">What could be costing you leads</p>
+            <div className="demo-finding high">
+              <strong>Getting a quote is not obvious</strong>
+              <p>Visitors are not immediately shown how to request an estimate.</p>
+            </div>
+            <div className="demo-finding high">
+              <strong>Your service areas are not clear</strong>
+              <p>Google and homeowners may have difficulty understanding exactly where you work.</p>
+            </div>
+            <div className="demo-finding medium">
+              <strong>Your project work is difficult to find</strong>
+              <p>Potential customers may not be seeing enough proof of the quality of your work.</p>
+            </div>
+            <div className="demo-finding good">
+              <strong>Your phone number is easy to find</strong>
+              <p>Customers have a clear way to call your business.</p>
+            </div>
+          </div>
+          <div className="report-demo-side">
+            <div>
+              <strong>Lead Generation</strong>
+              <span>51</span>
+            </div>
+            <div>
+              <strong>Homeowner Trust</strong>
+              <span>62</span>
+            </div>
+            <div>
+              <strong>Google Visibility</strong>
+              <span>59</span>
+            </div>
+          </div>
+        </div>
+        <div className="report-demo-cta">
+          <UrlScanForm onSubmit={onStartScan} compact source="landing_report_preview" ctaLabel="Find Out Free" />
+        </div>
+      </article>
+    </section>
+  );
+}
+
 export function LandingPage({ onStartScan, onNavigate }: LandingPageProps) {
   return (
-    <div className="landing-page contractor-landing">
-      <section className="hero-section contractor-hero" id="leadcheck-start">
-        <div className="hero-copy">
-          <p className="eyebrow">Built for contractors & home-service businesses</p>
+    <div className="landing-page contractor-landing landing-v2">
+      <section className="contractor-hero-v2" id="leadcheck-start">
+        <div className="hero-blueprint" aria-hidden="true" />
+        <div className="hero-copy hero-v2-copy">
+          <p className="eyebrow">Built for contractors & home services</p>
           <h1>Find Out Why You&apos;re Still Relying on Referrals</h1>
           <p className="hero-lede">
-            Your reputation is bringing you business. Your website should be too. LeadCheck finds the issues that could
-            be stopping local homeowners from calling, requesting a quote, or choosing your business.
+            Your reputation is bringing you business. Your website should be too. LeadCheck identifies issues that could
+            be stopping homeowners from calling, requesting a quote, or choosing your company.
           </p>
-          <UrlScanForm onSubmit={onStartScan} source="landing_hero" ctaLabel="Check My Website Free" />
+          <UrlScanForm onSubmit={onStartScan} source="landing_hero" ctaLabel="Find Out Free" />
           <div className="hero-expectations" aria-label="LeadCheck scan expectations">
             <span>
               <CheckCircle2 size={16} aria-hidden="true" />
@@ -183,85 +346,92 @@ export function LandingPage({ onStartScan, onNavigate }: LandingPageProps) {
             </span>
           </div>
         </div>
+        <div className="hero-visual" aria-label="Contractor project with LeadCheck report preview">
+          <LandingImage photo={photos.hero} className="hero-photo" loading="eager" sizes="(min-width: 900px) 45vw, 100vw" />
+          <HeroScoreCard />
+        </div>
+      </section>
 
-        <div className="contractor-report-preview" aria-label="Example Website Lead Score report preview">
-          <div className="preview-window">
-            <div className="preview-bar">
-              <strong>{brand.name}</strong>
-              <span>Website Lead Report</span>
-            </div>
-            <div className="preview-score-row">
-              <div className="preview-score">58</div>
-              <div>
-                <p className="eyebrow">Website Lead Score</p>
-                <h2>Important lead opportunities</h2>
-                <p>Your website has several issues that could make it harder to turn visitors into calls and quote requests.</p>
-              </div>
-            </div>
-            <div className="preview-priorities contractor-preview-list">
-              <span className="preview-alert high">Visitors do not have an obvious way to request a quote</span>
-              <span className="preview-alert high">Your service areas are not clearly connected to your services</span>
-              <span className="preview-alert medium">Homeowners are not being shown enough proof of your work</span>
-              <span className="preview-alert good">Your phone number is easy to find</span>
-            </div>
+      <section className="industry-strip" aria-label="Industries LeadCheck supports">
+        <div>
+          <p className="eyebrow">Built for businesses like yours</p>
+          <div className="industry-strip-scroll">
+            {industries.map(industry => {
+              const Icon = industry.icon;
+              return (
+                <span key={industry.label}>
+                  <Icon size={16} aria-hidden="true" />
+                  {industry.label}
+                </span>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      <section className="content-band industry-band">
-        <div className="section-heading centered">
-          <p className="eyebrow">Who LeadCheck Is For</p>
-          <h2>Built for local companies that win work in people&apos;s homes</h2>
-          <p>
-            LeadCheck is made for business owners who want more calls, quote requests, estimates, and jobs from their
-            website.
-          </p>
+      <section className="content-band split-band referral-story">
+        <div className="photo-panel photo-panel-renovation">
+          <LandingImage photo={photos.renovation} className="section-photo" />
+          <span>Real projects should create real confidence online.</span>
         </div>
-        <div className="industry-grid">
-          {industries.map(industry => (
-            <span key={industry}>
-              <BriefcaseBusiness size={16} aria-hidden="true" />
-              {industry}
-            </span>
-          ))}
-        </div>
-      </section>
-
-      <section className="content-band split-band referral-band">
         <div>
-          <p className="eyebrow">The Problem</p>
+          <p className="eyebrow">The Referral Gap</p>
           <h2>Your referrals are working. But is your website?</h2>
           <p>
-            Referrals are valuable. LeadCheck is not here to replace them. The problem is when referrals are the only
-            predictable source of new business while your website quietly sits there doing very little.
+            You have spent years building your reputation. Past customers recommend you. People know your work.
           </p>
           <p>
-            Local homeowners may already be checking your website and leaving without calling because the next step,
-            service area, proof, or reason to choose you is not clear enough.
+            But homeowners who do not already know you are often judging your business through your website before they
+            ever call. LeadCheck shows what could be stopping those visitors from becoming leads.
           </p>
-        </div>
-        <div className="referral-proof-panel" aria-label="Referral and website lead comparison">
-          <div>
-            <Home size={22} aria-hidden="true" />
-            <strong>Referrals</strong>
-            <p>People already trust your name.</p>
-          </div>
-          <div>
-            <Search size={22} aria-hidden="true" />
-            <strong>Your Website</strong>
-            <p>Should help turn local searches and visitors into calls too.</p>
+          <div className="reputation-contrast" aria-label="Referral versus website comparison">
+            <div>
+              <Home size={20} aria-hidden="true" />
+              <strong>Offline reputation</strong>
+              <span>People already trust your name.</span>
+            </div>
+            <div>
+              <Search size={20} aria-hidden="true" />
+              <strong>Online first impression</strong>
+              <span>Your website needs to earn the call.</span>
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="content-band" id="what-it-checks">
+      <section className="content-band homeowner-section">
         <div className="section-heading centered">
-          <p className="eyebrow">What LeadCheck Looks For</p>
-          <h2>Questions contractors actually care about</h2>
-          <p>LeadCheck checks whether your website helps homeowners understand, trust, and contact your business.</p>
+          <p className="eyebrow">What Homeowners See</p>
+          <h2>Homeowners are judging your business before they ever call.</h2>
+          <p>
+            LeadCheck reviews your website like a homeowner who wants a clear reason to trust you and a clear next step.
+          </p>
+        </div>
+        <HomeownerWebsiteMock />
+      </section>
+
+      <ExampleReportPreview onStartScan={onStartScan} />
+
+      <section className="photo-break">
+        <LandingImage photo={photos.landscape} className="photo-break-image" />
+        <div className="photo-break-copy">
+          <p className="eyebrow">Built Around Better Leads</p>
+          <h2>You built a business people recommend. Now make sure your website does the same.</h2>
+          <button className="primary-action" type="button" onClick={() => document.getElementById('leadcheck-start')?.scrollIntoView({ behavior: 'smooth' })}>
+            Check My Website Free
+            <ArrowRight size={17} aria-hidden="true" />
+          </button>
+        </div>
+      </section>
+
+      <section className="content-band contractor-checks" id="what-it-checks">
+        <div className="section-heading centered">
+          <p className="eyebrow">What We Check</p>
+          <h2>We check the things homeowners care about</h2>
+          <p>These are business questions, not technical website jargon.</p>
         </div>
         <div className="check-grid contractor-question-grid">
-          {contractorQuestions.map(item => {
+          {contractorChecks.map(item => {
             const Icon = item.icon;
             return (
               <article className="check-card" key={item.title}>
@@ -274,78 +444,34 @@ export function LandingPage({ onStartScan, onNavigate }: LandingPageProps) {
         </div>
       </section>
 
-      <section className="content-band report-preview-band">
-        <div className="section-heading centered">
-          <p className="eyebrow">Report Preview</p>
-          <h2>See what could be costing you calls and quote requests</h2>
-        </div>
-        <article className="example-finding-card contractor-report-card" aria-label="Example LeadCheck report preview">
-          <div className="finding-topline">
-            <span className="priority-badge">Example</span>
-            <span className="status-pill">Turning Visitors Into Leads</span>
-          </div>
-          <h3>Visitors are not given an obvious next step</h3>
-          <div className="example-finding-grid">
-            <div>
-              <strong>What we found</strong>
-              <p>Important pages do not make it immediately clear how to request a quote or estimate.</p>
-            </div>
-            <div>
-              <strong>Why this matters</strong>
-              <p>Someone looking for a contractor may leave if they cannot quickly see how to contact you.</p>
-            </div>
-            <div>
-              <strong>What to do next</strong>
-              <p>Add a prominent Request a Quote or Get an Estimate button near the top of key pages.</p>
-            </div>
-          </div>
-          <button className="primary-action report-preview-cta" type="button" onClick={() => onNavigate('/scan')}>
-            Check My Website Free
-            <ArrowRight size={17} aria-hidden="true" />
-          </button>
-        </article>
-      </section>
-
-      <section className="content-band split-band value-band">
+      <section className="content-band trade-proof-band">
         <div>
-          <p className="eyebrow">What You Get</p>
-          <h2>A plain-language view of why your website may not be bringing in jobs</h2>
-          <p>LeadCheck turns website problems into clear priorities a contractor can understand and act on.</p>
+          <p className="eyebrow">More Than Remodeling</p>
+          <h2>Designed for the way home-service companies win trust</h2>
+          <p>
+            Roofing, landscaping, HVAC, electrical, plumbing, painting, excavation, flooring, and renovation businesses
+            all need the same thing online: proof, clarity, and an easy way for good customers to reach out.
+          </p>
         </div>
-        <div className="value-card-grid">
-          {valueCards.map(item => {
-            const Icon = item.icon;
-            return (
-              <div className="value-card" key={item.title}>
-                <Icon size={18} aria-hidden="true" />
-                <div>
-                  <strong>{item.title}</strong>
-                  <p>{item.copy}</p>
-                </div>
-              </div>
-            );
-          })}
+        <div className="trade-photo-grid" aria-label="Examples of home-service work LeadCheck supports">
+          <LandingImage photo={photos.roofing} className="trade-photo tall" />
+          <LandingImage photo={photos.electrician} className="trade-photo" />
         </div>
       </section>
 
-      <section className="content-band" id="how-it-works">
+      <section className="content-band how-it-works-v2" id="how-it-works">
         <div className="section-heading centered">
-          <p className="eyebrow">How It Works</p>
+          <p className="eyebrow">How LeadCheck Works</p>
           <h2>From website to lead priorities in minutes</h2>
-          <p>No account required to start. Enter your website and see what LeadCheck finds.</p>
         </div>
-        <div className="steps-list process-steps contractor-process">
-          {processSteps.map((step, index) => {
-            const Icon = step.icon;
-            return (
-              <article className="step-card" key={step.title}>
-                <span>{index + 1}</span>
-                <Icon size={22} aria-hidden="true" />
-                <h3>{step.title}</h3>
-                <p>{step.copy}</p>
-              </article>
-            );
-          })}
+        <div className="process-steps-v2">
+          {processSteps.map(step => (
+            <article className="process-card-v2" key={step.title}>
+              <span>{step.label}</span>
+              <h3>{step.title}</h3>
+              <p>{step.copy}</p>
+            </article>
+          ))}
         </div>
       </section>
 
@@ -381,14 +507,17 @@ export function LandingPage({ onStartScan, onNavigate }: LandingPageProps) {
         </div>
       </section>
 
-      <section className="final-cta">
+      <section className="final-cta final-cta-v2">
+        <div className="final-cta-photo" aria-hidden="true">
+          <LandingImage photo={photos.roofing} className="final-photo" />
+        </div>
         <div className="final-cta-inner">
           <Star size={30} aria-hidden="true" />
           <p className="eyebrow">Free Website Lead Check</p>
           <h2>Your referrals shouldn&apos;t have to do all the work.</h2>
-          <p>Find out whether your website is helping bring you new calls, quote requests, and jobs too.</p>
+          <p>Find out whether your website is helping bring you new customers too.</p>
           <UrlScanForm onSubmit={onStartScan} compact source="landing_bottom" ctaLabel="Check My Website Free" />
-          <p className="final-cta-note">Free. Takes about 60 seconds. No credit card required.</p>
+          <p className="final-cta-note">Free. About 60 seconds. No credit card.</p>
         </div>
       </section>
     </div>

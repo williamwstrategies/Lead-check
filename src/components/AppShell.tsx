@@ -50,11 +50,8 @@ export function AppShell({ children, currentPath, onNavigate }: AppShellProps) {
               <button className="nav-item" type="button" onClick={() => scrollToLandingSection('what-it-checks')}>
                 What It Checks
               </button>
-              <button className="nav-item" type="button" onClick={() => scrollToLandingSection('faq')}>
-                FAQ
-              </button>
-              <button className="nav-item" type="button" onClick={() => onNavigate('/blog')}>
-                Blog
+              <button className="nav-item" type="button" onClick={() => scrollToLandingSection('example-report')}>
+                Example Report
               </button>
             </nav>
             <button className="primary-action header-action" type="button" onClick={() => scrollToLandingSection('leadcheck-start')}>
